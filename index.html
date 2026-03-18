@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <!-- Club Card (floating over globe) -->
+    <!-- Club Card (top left) -->
     <div id="club-card" class="club-card hidden">
       <div class="cc-header">
         <span class="cc-flag" id="cc-flag"></span>
@@ -60,7 +60,14 @@
       <button class="cc-deepen" onclick="openDeepDive()">Full story →</button>
     </div>
 
-    <!-- Bottom panel: player stats + timeline + nav -->
+    <!-- Teammates Panel (right side) -->
+    <div id="teammates-panel" class="teammates-panel hidden">
+      <p class="tm-title">Squad at</p>
+      <p class="tm-era" id="tm-era"></p>
+      <div id="teammates-list" class="teammates-list"></div>
+    </div>
+
+    <!-- Bottom panel -->
     <div id="player-panel" class="player-panel hidden">
       <div class="player-header">
         <div class="player-flag" id="player-flag"></div>
@@ -74,8 +81,6 @@
           <div class="stat-pill"><span id="stat-apps">0</span><label>Apps</label></div>
         </div>
       </div>
-
-      <!-- Navigation arrows + timeline -->
       <div class="nav-row">
         <button id="btn-prev" class="nav-btn" disabled>←</button>
         <div id="career-timeline" class="career-timeline"></div>
