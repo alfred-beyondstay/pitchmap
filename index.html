@@ -11,6 +11,8 @@
 </head>
 <body>
   <div id="app">
+
+    <!-- Header -->
     <header id="header">
       <div class="logo">
         <span class="logo-icon">⚽</span>
@@ -22,32 +24,11 @@
       </div>
       <button id="share-btn" class="share-btn" style="display:none">Share ↗</button>
     </header>
+
+    <!-- Globe -->
     <div id="globe-container"></div>
-    <div id="player-panel" class="player-panel hidden">
-      <div class="player-header">
-        <div class="player-flag" id="player-flag"></div>
-        <div class="player-info">
-          <h1 id="player-name"></h1>
-          <p id="player-subtitle"></p>
-        </div>
-        <div class="player-stats-summary">
-          <div class="stat-pill"><span id="stat-clubs">0</span><label>Clubs</label></div>
-          <div class="stat-pill"><span id="stat-goals">0</span><label>Goals</label></div>
-          <div class="stat-pill"><span id="stat-apps">0</span><label>Apps</label></div>
-        </div>
-      </div>
-      <div id="career-timeline" class="career-timeline"></div>
-    </div>
-    <div id="club-popup" class="club-popup hidden">
-      <button class="popup-close" onclick="closePopup()">×</button>
-      <div class="popup-flag" id="popup-flag"></div>
-      <h3 id="popup-club"></h3>
-      <p id="popup-years"></p>
-      <div class="popup-stats">
-        <div><span id="popup-apps"></span><label>Apps</label></div>
-        <div><span id="popup-goals"></span><label>Goals</label></div>
-      </div>
-    </div>
+
+    <!-- Landing -->
     <div id="landing" class="landing">
       <h2>Track every step of a<br/>footballer's journey</h2>
       <p>Search for a player to see their career mapped across the globe</p>
@@ -61,6 +42,74 @@
         <button class="chip" onclick="selectPlayer('Erling Haaland')">Erling Haaland</button>
       </div>
     </div>
+
+    <!-- Club Card (floating over globe) -->
+    <div id="club-card" class="club-card hidden">
+      <div class="cc-header">
+        <span class="cc-flag" id="cc-flag"></span>
+        <div class="cc-info">
+          <h3 id="cc-club"></h3>
+          <p id="cc-country"></p>
+        </div>
+      </div>
+      <div class="cc-stats">
+        <div class="cc-stat"><span id="cc-apps"></span><label>Apps</label></div>
+        <div class="cc-stat"><span id="cc-goals"></span><label>Goals</label></div>
+        <div class="cc-stat"><span id="cc-assists"></span><label>Assists</label></div>
+      </div>
+      <button class="cc-deepen" onclick="openDeepDive()">Full story →</button>
+    </div>
+
+    <!-- Bottom panel: player stats + timeline + nav -->
+    <div id="player-panel" class="player-panel hidden">
+      <div class="player-header">
+        <div class="player-flag" id="player-flag"></div>
+        <div class="player-info">
+          <h1 id="player-name"></h1>
+          <p id="player-subtitle"></p>
+        </div>
+        <div class="player-stats-summary">
+          <div class="stat-pill"><span id="stat-clubs">0</span><label>Clubs</label></div>
+          <div class="stat-pill"><span id="stat-goals">0</span><label>Goals</label></div>
+          <div class="stat-pill"><span id="stat-apps">0</span><label>Apps</label></div>
+        </div>
+      </div>
+
+      <!-- Navigation arrows + timeline -->
+      <div class="nav-row">
+        <button id="btn-prev" class="nav-btn" disabled>←</button>
+        <div id="career-timeline" class="career-timeline"></div>
+        <button id="btn-next" class="nav-btn">→</button>
+      </div>
+      <div class="nav-label-row"><span id="nav-label"></span></div>
+    </div>
+
+    <!-- Deep Dive Modal -->
+    <div id="deep-dive" class="deep-dive hidden">
+      <div class="dd-inner">
+        <button class="dd-close" onclick="closeDeepDive()">×</button>
+        <h2 id="dd-title"></h2>
+        <p class="dd-period" id="dd-period"></p>
+        <div class="dd-stats">
+          <div><span id="dd-apps"></span><label>Apps</label></div>
+          <div><span id="dd-goals"></span><label>Goals</label></div>
+          <div><span id="dd-assists"></span><label>Assists</label></div>
+        </div>
+        <div class="dd-section">
+          <h4>⚡ Fun Fact</h4>
+          <p id="dd-funfact"></p>
+        </div>
+        <div class="dd-section">
+          <h4>🎭 The Drama</h4>
+          <p id="dd-drama"></p>
+        </div>
+        <div class="dd-section">
+          <h4>🏆 Highlight</h4>
+          <p id="dd-highlight"></p>
+        </div>
+      </div>
+    </div>
+
   </div>
   <script src="https://unpkg.com/globe.gl@2.30.0/dist/globe.gl.min.js"></script>
   <script src="app.js"></script>
