@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pitchmap — The Football Universe</title>
+  <meta name="description" content="Explore football's greatest careers on an interactive globe. Follow the journeys of Ronaldo, Messi, Zlatan and more — plus a daily Wordle-style guess-the-player game." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -13,10 +14,10 @@
 <body>
   <div id="app">
 
-    <!-- TIMELINE SCRUBBER (always top) -->
+    <!-- TIMELINE SCRUBBER -->
     <div id="timeline-bar" class="timeline-bar">
       <span class="tl-label">Year</span>
-      <input type="range" id="year-slider" min="2015" max="2024" value="2024" step="1" />
+      <input type="range" id="year-slider" min="1990" max="2025" value="2024" step="1" />
       <span id="year-display" class="tl-year">2024</span>
     </div>
 
@@ -31,12 +32,13 @@
         <div id="suggestions" class="suggestions"></div>
       </div>
       <div class="country-nav">
-        <button onclick="goToCountry('England')">🏴󠁧󠁢󠁥󠁮󠁧󠁿 ENG</button>
+        <button onclick="goToCountry('England')">🏴 ENG</button>
         <button onclick="goToCountry('Spain')">🇪🇸 ESP</button>
         <button onclick="goToCountry('Italy')">🇮🇹 ITA</button>
         <button onclick="goToCountry('France')">🇫🇷 FRA</button>
         <button onclick="goToCountry('Germany')">🇩🇪 GER</button>
       </div>
+      <button id="daily-game-btn" class="daily-btn" onclick="startDailyGame()">🎮 Daily</button>
       <button id="share-btn" class="share-btn" style="display:none">Share ↗</button>
     </header>
 
@@ -49,31 +51,44 @@
     <!-- GLOBE -->
     <div id="globe-container"></div>
 
-    <!-- LEAFLET MAP (flat country view) -->
+    <!-- LEAFLET MAP -->
     <div id="map-container" style="display:none"></div>
 
     <!-- LANDING -->
     <div id="landing" class="landing">
       <h2>Explore football's infinite universe</h2>
-      <p>Follow players, clubs, and nations across the globe</p>
+      <p>Follow the greatest careers across the globe</p>
       <div class="player-chips">
-        <button class="chip" onclick="selectPlayer('Zlatan Ibrahimović')">Zlatan Ibrahimović</button>
-        <button class="chip" onclick="selectPlayer('Cristiano Ronaldo')">Cristiano Ronaldo</button>
-        <button class="chip" onclick="selectPlayer('Lionel Messi')">Lionel Messi</button>
-        <button class="chip" onclick="selectPlayer('Ronaldinho')">Ronaldinho</button>
-        <button class="chip" onclick="selectPlayer('Thierry Henry')">Thierry Henry</button>
-        <button class="chip" onclick="selectPlayer('Neymar')">Neymar</button>
-        <button class="chip" onclick="selectPlayer('Erling Haaland')">Erling Haaland</button>
+        <button class="chip" onclick="selectPlayer('Zlatan Ibrahimović')">⚡ Zlatan</button>
+        <button class="chip" onclick="selectPlayer('Cristiano Ronaldo')">🇵🇹 Ronaldo</button>
+        <button class="chip" onclick="selectPlayer('Lionel Messi')">🇦🇷 Messi</button>
+        <button class="chip" onclick="selectPlayer('Ronaldinho')">🇧🇷 Ronaldinho</button>
+        <button class="chip" onclick="selectPlayer('Thierry Henry')">🇫🇷 Henry</button>
+        <button class="chip" onclick="selectPlayer('Kylian Mbappé')">⚡ Mbappé</button>
+        <button class="chip" onclick="selectPlayer('Erling Haaland')">🇳🇴 Haaland</button>
+        <button class="chip" onclick="selectPlayer('Kevin De Bruyne')">🇧🇪 De Bruyne</button>
+        <button class="chip" onclick="selectPlayer('Luka Modrić')">🇭🇷 Modrić</button>
+        <button class="chip" onclick="selectPlayer('Karim Benzema')">🇫🇷 Benzema</button>
       </div>
       <div style="margin-top:20px">
-        <p style="font-size:12px;color:#6b6b99;margin-bottom:10px">Or explore a league</p>
-        <button class="chip" onclick="goToCountry('England')">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</button>
-        <button class="chip" onclick="goToCountry('Spain')">🇪🇸 La Liga</button>
-        <button class="chip" onclick="goToCountry('Italy')">🇮🇹 Serie A</button>
+        <p style="font-size:12px;color:#6b6b99;margin-bottom:12px">Or explore by league</p>
+        <div class="player-chips">
+          <button class="chip" onclick="goToCountry('England')">🏴 Premier League</button>
+          <button class="chip" onclick="goToCountry('Spain')">🇪🇸 La Liga</button>
+          <button class="chip" onclick="goToCountry('Italy')">🇮🇹 Serie A</button>
+          <button class="chip" onclick="goToCountry('Germany')">🇩🇪 Bundesliga</button>
+          <button class="chip" onclick="goToCountry('France')">🇫🇷 Ligue 1</button>
+        </div>
+      </div>
+      <div style="margin-top:24px">
+        <button class="game-launch-btn" onclick="startDailyGame()">
+          🎮 Play Today's Daily Challenge
+          <span id="daily-game-hint" style="font-size:11px;opacity:0.7;display:block;margin-top:3px"></span>
+        </button>
       </div>
     </div>
 
-    <!-- CLUB CARD (top left, player journey) -->
+    <!-- CLUB CARD (player journey) -->
     <div id="club-card" class="club-card hidden">
       <div class="cc-header">
         <span class="cc-flag" id="cc-flag"></span>
@@ -90,7 +105,7 @@
       <button class="cc-deepen" onclick="openDeepDive()">Full story →</button>
     </div>
 
-    <!-- TEAMMATES (right side, player journey) -->
+    <!-- TEAMMATES PANEL -->
     <div id="teammates-panel" class="teammates-panel hidden">
       <p class="tm-title">Squad at</p>
       <p class="tm-era" id="tm-era"></p>
@@ -120,7 +135,7 @@
       <div class="nav-label-row"><span id="nav-label"></span></div>
     </div>
 
-    <!-- CLUB VIEW (full panel) -->
+    <!-- CLUB VIEW -->
     <div id="club-view" class="club-view hidden">
       <button class="panel-close" onclick="closeClubView()">← Back</button>
       <div class="cv-layout">
@@ -128,18 +143,9 @@
           <h2 id="cv-name"></h2>
           <p class="cv-meta" id="cv-meta"></p>
           <p class="cv-meta" id="cv-stadium"></p>
-          <div class="cv-section">
-            <h4>History</h4>
-            <p id="cv-history"></p>
-          </div>
-          <div class="cv-section">
-            <h4>Ownership</h4>
-            <p id="cv-owner"></p>
-          </div>
-          <div class="cv-section">
-            <h4>🏆 Honours</h4>
-            <ul id="cv-titles"></ul>
-          </div>
+          <div class="cv-section"><h4>History</h4><p id="cv-history"></p></div>
+          <div class="cv-section"><h4>Ownership</h4><p id="cv-owner"></p></div>
+          <div class="cv-section"><h4>🏆 Honours</h4><ul id="cv-titles"></ul></div>
         </div>
         <div class="cv-right">
           <h4>Squad <span id="cv-year"></span></h4>
@@ -155,14 +161,8 @@
         <div class="nv-left">
           <h2 id="nv-name"></h2>
           <p class="cv-meta" id="nv-meta"></p>
-          <div class="cv-section">
-            <h4>Tournament History</h4>
-            <div id="nv-tournaments"></div>
-          </div>
-          <div class="cv-section">
-            <h4>All-Time Greats</h4>
-            <div id="nv-greats" class="greats-list"></div>
-          </div>
+          <div class="cv-section"><h4>Tournament History</h4><div id="nv-tournaments"></div></div>
+          <div class="cv-section"><h4>All-Time Greats</h4><div id="nv-greats" class="greats-list"></div></div>
         </div>
         <div class="nv-right">
           <h4>Current Squad</h4>
@@ -188,7 +188,45 @@
       </div>
     </div>
 
+    <!-- DAILY GAME PANEL -->
+    <div id="game-panel" class="game-panel hidden">
+      <div class="game-inner">
+        <div class="game-header">
+          <div>
+            <h2 class="game-title">⚽ Daily Challenge</h2>
+            <p id="game-hint" class="game-hint"></p>
+          </div>
+          <button class="game-exit-btn" onclick="exitGame()">✕ Exit</button>
+        </div>
+
+        <div id="game-guess-area">
+          <p class="game-instructions">The mystery player's career arc is shown on the globe. One club is revealed per wrong guess. Who is it?</p>
+          <div id="game-search-wrapper" style="position:relative;margin-bottom:12px">
+            <input type="text" id="game-input" autocomplete="off" placeholder="Type a player name and press Enter..." />
+            <div id="game-suggestions" class="suggestions"></div>
+          </div>
+          <p id="game-feedback" class="game-feedback"></p>
+          <div id="game-guesses-list" class="game-guesses-list"></div>
+        </div>
+
+        <div id="game-result" class="game-result hidden">
+          <div id="game-result-title" class="game-result-title"></div>
+          <div id="game-result-subtitle" class="game-result-subtitle"></div>
+          <div id="game-result-career" class="game-result-career"></div>
+          <div id="game-result-guesses" class="game-result-guesses"></div>
+          <div class="game-share-box">
+            <textarea id="game-share-text" class="game-share-text" readonly rows="5"></textarea>
+            <button id="copy-share-btn" class="game-share-copy" onclick="copyGameShare()">Copy Result</button>
+          </div>
+          <button class="game-see-career" onclick="exitGame(); setTimeout(() => selectPlayer(gameMystery && gameMystery.name), 100)">
+            Explore their career →
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/globe.gl@2.30.0/dist/globe.gl.min.js"></script>
   <script src="pitchmap-data.js"></script>
