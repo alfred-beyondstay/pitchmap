@@ -1,7 +1,6 @@
 // ============================================================
-// PITCHMAP v5 — Seamless Globe + Daily Guess-the-Player Game
-// Globe → Country → Club → Player → National Team → repeat
-// NO camera resets. Every navigation = interpolated camera move.
+// PITCHMAP v6 — Seamless Globe Navigation + Daily Game
+// All navigation = interpolated camera moves. Zero hard resets.
 // ============================================================
 
 // ============================================================
@@ -18,6 +17,7 @@ let currentCountry = null;
 let currentClubIndex = 0;
 let currentYear = 2024;
 let popupTimeout = null;
+let flyTimeout = null;
 
 // ---- GAME STATE ----
 let gameActive = false;
@@ -25,10 +25,10 @@ let gameMystery = null;
 let gameGuesses = [];
 let gameMaxGuesses = 6;
 let gameSolved = false;
-let gameRevealIndex = 0; // how many clubs shown in mystery mode
+let gameRevealIndex = 0;
 
 // ============================================================
-// DAILY SEED — deterministic player per day
+// DAILY SEED — deterministic player per calendar day
 // ============================================================
 function getDailyPlayerName() {
   const playerNames = Object.keys(PLAYERS);
@@ -38,7 +38,7 @@ function getDailyPlayerName() {
 }
 
 // ============================================================
-// INIT GLOBE — seamless navigation
+// INIT GLOBE
 // ============================================================
 function initGlobe() {
   globe = Globe({ animateIn: true })(document.getElementById('globe-container'))
@@ -64,13 +64,17 @@ function initGlobe() {
 }
 
 // ============================================================
-// SEAMLESS CAMERA — all navigation through this
+// SEAMLESS CAMERA — every navigation is interpolated
 // ============================================================
 function flyTo(lat, lng, altitude, durationMs, callback) {
   if (!globe) return;
   globe.controls().autoRotate = false;
-  globe.pointOfView({ lat, lng, altitude }, durationMs || 1600);
-  if (callback) setTimeout(callback, (durationMs || 1600) + 100);
+  const dur = durationMs || 1600;
+  globe.pointOfView({ lat, lng, altitude }, dur);
+  if (callback) {
+    clearTimeout(flyTimeout);
+    flyTimeout = setTimeout(callback, dur + 80);
+  }
 }
 
 // ============================================================
@@ -88,37 +92,36 @@ function initLeafletMap() {
 // COUNTRY CENTERS
 // ============================================================
 const COUNTRY_CENTERS = {
-  'England':  { lat: 52.5,  lng: -1.5, zoom: 6 },
-  'Spain':    { lat: 40.0,  lng: -3.5, zoom: 6 },
-  'Italy':    { lat: 42.5,  lng: 12.5, zoom: 6 },
-  'France':   { lat: 46.5,  lng: 2.3,  zoom: 6 },
-  'Germany':  { lat: 51.0,  lng: 10.0, zoom: 6 },
+  'England':  { lat: 52.5,  lng: -1.5,  zoom: 6 },
+  'Spain':    { lat: 40.0,  lng: -3.5,  zoom: 6 },
+  'Italy':    { lat: 42.5,  lng: 12.5,  zoom: 6 },
+  'France':   { lat: 46.5,  lng: 2.3,   zoom: 6 },
+  'Germany':  { lat: 51.0,  lng: 10.0,  zoom: 6 },
   'Netherlands': { lat: 52.3, lng: 5.3, zoom: 7 },
-  'Portugal': { lat: 39.5, lng: -8.0, zoom: 7 },
-  'Belgium':  { lat: 50.8, lng: 4.4,  zoom: 7 },
-  'Croatia':  { lat: 45.1, lng: 16.0, zoom: 7 },
-  'Turkey':   { lat: 39.0, lng: 35.0, zoom: 6 },
+  'Portugal': { lat: 39.5,  lng: -8.0,  zoom: 7 },
+  'Belgium':  { lat: 50.8,  lng: 4.4,   zoom: 7 },
+  'Croatia':  { lat: 45.1,  lng: 16.0,  zoom: 7 },
+  'Turkey':   { lat: 39.0,  lng: 35.0,  zoom: 6 },
   'Saudi Arabia': { lat: 24.7, lng: 46.7, zoom: 6 },
-  'USA':      { lat: 37.0, lng: -96.0, zoom: 4 },
+  'USA':      { lat: 37.0,  lng: -96.0, zoom: 4 },
   'Brazil':   { lat: -15.0, lng: -50.0, zoom: 4 },
-  'Austria':  { lat: 47.5, lng: 13.5, zoom: 7 },
-  'Norway':   { lat: 65.0, lng: 13.0, zoom: 5 },
-  'Sweden':   { lat: 63.0, lng: 16.0, zoom: 5 },
-  'Japan':    { lat: 36.0, lng: 138.0, zoom: 5 },
-  'UAE':      { lat: 24.0, lng: 54.0, zoom: 7 },
-  'Poland':   { lat: 52.0, lng: 20.0, zoom: 6 },
-  'Monaco':   { lat: 43.74, lng: 7.43, zoom: 13 },
+  'Austria':  { lat: 47.5,  lng: 13.5,  zoom: 7 },
+  'Norway':   { lat: 65.0,  lng: 13.0,  zoom: 5 },
+  'Sweden':   { lat: 63.0,  lng: 16.0,  zoom: 5 },
+  'Japan':    { lat: 36.0,  lng: 138.0, zoom: 5 },
+  'UAE':      { lat: 24.0,  lng: 54.0,  zoom: 7 },
+  'Poland':   { lat: 52.0,  lng: 20.0,  zoom: 6 },
+  'Monaco':   { lat: 43.74, lng: 7.43,  zoom: 13 },
+  'Qatar':    { lat: 25.3,  lng: 51.5,  zoom: 9 },
 };
 
 // ============================================================
-// MODE: COUNTRY — seamless fly-in
+// MODE: COUNTRY — seamless fly-in then leaflet
 // ============================================================
 function goToCountry(country) {
   const c = COUNTRY_CENTERS[country] || { lat: 50, lng: 0, zoom: 6 };
   currentCountry = country;
-  // Fly globe camera to country first
   flyTo(c.lat, c.lng, 0.5, 1200, () => {
-    // Then fade to Leaflet map
     document.getElementById('globe-container').classList.add('fade-out');
     setTimeout(() => {
       document.getElementById('globe-container').style.display = 'none';
@@ -151,9 +154,10 @@ function placeClubMarkers(country) {
   clearClubMarkers();
   const clubs = COUNTRY_CLUBS[country] || [];
   clubs.forEach(c => {
+    const safeName = c.name.replace(/'/g, "\\'");
     const div = L.divIcon({
       className: '',
-      html: '<div class="club-marker" style="background:' + c.color + '" onclick="openClubFromMap(\'' + c.name.replace(/'/g, "\\'") + '\')">' +
+      html: '<div class="club-marker" style="background:' + c.color + '" onclick="openClubFromMap(\'' + safeName + '\')">' +
             '<span>' + c.name.substring(0, 3).toUpperCase() + '</span></div>',
       iconSize: [44, 44], iconAnchor: [22, 22]
     });
@@ -196,7 +200,15 @@ function renderClubView(club) {
 
 function renderClubSquad(club, year) {
   const yr = String(year);
-  const squad = club.squad && (club.squad[yr] || club.squad[Object.keys(club.squad).sort().pop()]);
+  const years = Object.keys(club.squad || {}).sort();
+  let squad = club.squad && club.squad[yr];
+  if (!squad && years.length) {
+    // find closest year
+    const closest = years.reduce((a, b) =>
+      Math.abs(parseInt(b) - year) < Math.abs(parseInt(a) - year) ? b : a
+    );
+    squad = club.squad[closest];
+  }
   if (!squad) return;
   document.getElementById('cv-squad').innerHTML = squad.map(p =>
     '<div class="squad-card' + (PLAYERS[p.name] ? ' clickable' : '') + '"' +
@@ -206,10 +218,6 @@ function renderClubSquad(club, year) {
     (PLAYERS[p.name] ? '<span class="sq-arrow">→</span>' : '') + '</div>'
   ).join('');
   document.getElementById('cv-year').textContent = year;
-}
-
-function tryOpenPlayer(name) {
-  if (PLAYERS[name]) selectPlayer(name);
 }
 
 function showClubBasic(name) {
@@ -248,13 +256,14 @@ searchInput.addEventListener('input', () => {
   ).join('');
   suggestionsEl.classList.add('open');
 });
+
 document.addEventListener('click', e => {
   if (!e.target.closest('.search-container')) suggestionsEl.classList.remove('open');
 });
 
 function selectPlayer(name) {
+  // If in game mode, treat as a guess
   if (gameActive && !gameSolved) {
-    // In game mode, treat as a guess
     submitGuess(name);
     return;
   }
@@ -266,12 +275,13 @@ function selectPlayer(name) {
   suggestionsEl.classList.remove('open');
   searchInput.value = '';
 
-  // Seamless: if on map, fly back to globe first
+  // Seamless: if on leaflet map, fade back to globe
   if (document.getElementById('map-container').style.display !== 'none') {
     document.getElementById('map-container').style.display = 'none';
     document.getElementById('globe-container').style.display = 'block';
   }
 
+  // Hide all panels
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('club-card').classList.add('hidden');
   document.getElementById('deep-dive').classList.add('hidden');
@@ -329,7 +339,7 @@ function goToClub(index) {
   document.getElementById('btn-next').disabled = index === career.length - 1;
   document.getElementById('nav-label').textContent = (index + 1) + ' / ' + career.length;
 
-  // Arc to next club
+  // Arc from current to next club
   if (index < career.length - 1) {
     const next = career[index + 1];
     globe.arcsData([{
@@ -341,7 +351,7 @@ function goToClub(index) {
     globe.arcsData([]);
   }
 
-  // Update point sizes — current = big white, visited = dim, future = green
+  // Update point sizes — current = large white, visited = dim, future = green
   globe.pointsData(career.map((c, i) => ({
     lat: c.lat, lng: c.lng,
     color: i === index ? '#ffffff' : (i < index ? 'rgba(0,255,136,0.35)' : '#00ff88'),
@@ -352,7 +362,7 @@ function goToClub(index) {
 
   globe.labelsData([{ lat: club.lat + 0.8, lng: club.lng, text: club.city + ', ' + club.country }]);
 
-  // Seamless camera fly — always interpolated, no hard resets
+  // Seamless camera interpolation — never a hard reset
   flyTo(club.lat, club.lng, 0.5, 1800);
 
   clearTimeout(popupTimeout);
@@ -393,7 +403,7 @@ function showTeammates(club) {
 
 function openDeepDive() {
   const index = parseInt(document.getElementById('club-card').dataset.index);
-  const club = currentPlayer.career[index];
+  const club = currentPlayer && currentPlayer.career[index];
   if (!club) return;
   document.getElementById('dd-title').textContent = club.flag + ' ' + club.club;
   document.getElementById('dd-period').textContent = club.city + ', ' + club.country + ' · ' + club.from + '–' + (club.to || 'present');
@@ -405,7 +415,11 @@ function openDeepDive() {
   document.getElementById('dd-highlight').textContent = club.highlight || '';
   document.getElementById('deep-dive').classList.remove('hidden');
 }
-function closeDeepDive() { document.getElementById('deep-dive').classList.add('hidden'); }
+
+function closeDeepDive() {
+  document.getElementById('deep-dive').classList.add('hidden');
+}
+
 function handleGlobePointClick(point) {
   if (point.clubIndex !== undefined) goToClub(point.clubIndex);
 }
@@ -465,6 +479,7 @@ function startDailyGame() {
   gameRevealIndex = 0;
   gameActive = true;
 
+  // Close all other panels
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('player-panel').classList.add('hidden');
   document.getElementById('club-card').classList.add('hidden');
@@ -473,6 +488,7 @@ function startDailyGame() {
   document.getElementById('national-view').classList.add('hidden');
   document.getElementById('deep-dive').classList.add('hidden');
 
+  // Show game panel
   document.getElementById('game-panel').classList.remove('hidden');
   document.getElementById('game-guess-area').classList.remove('hidden');
   document.getElementById('game-result').classList.add('hidden');
@@ -480,15 +496,21 @@ function startDailyGame() {
   document.getElementById('game-guesses-list').innerHTML = '';
   document.getElementById('game-feedback').textContent = '';
 
-  // Show mystery career on globe — reveals one club at a time
+  // Make sure globe is visible
+  if (document.getElementById('map-container').style.display !== 'none') {
+    document.getElementById('map-container').style.display = 'none';
+    document.getElementById('globe-container').style.display = 'block';
+  }
+
   renderMysteryGlobe();
-  updateGameUI();
+  updateGameHint();
 }
 
 function renderMysteryGlobe() {
   if (!gameMystery) return;
   const career = gameMystery.career;
-  const visible = career.slice(0, Math.max(1, gameRevealIndex + 1));
+  const revealCount = Math.max(1, gameRevealIndex + 1);
+  const visible = career.slice(0, revealCount);
 
   globe.pointsData(visible.map((c, i) => ({
     lat: c.lat, lng: c.lng,
@@ -509,7 +531,7 @@ function renderMysteryGlobe() {
   }
   globe.arcsData(arcs);
 
-  // Mystery labels (show country only for first few clubs)
+  // Labels: country only early, city+country later
   globe.labelsData(visible.map((c, i) => ({
     lat: c.lat + 0.8, lng: c.lng,
     text: gameRevealIndex < 2 ? c.country : c.city + ', ' + c.country
@@ -520,12 +542,12 @@ function renderMysteryGlobe() {
   flyTo(last.lat, last.lng, 0.7, 1400);
 }
 
-function updateGameUI() {
+function updateGameHint() {
   const remaining = gameMaxGuesses - gameGuesses.length;
+  const revealed = Math.min(gameRevealIndex + 1, gameMystery.career.length);
   document.getElementById('game-hint').textContent =
-    'Club ' + (gameRevealIndex + 1) + ' of ' + gameMystery.career.length + ' revealed · ' +
+    'Club ' + revealed + ' of ' + gameMystery.career.length + ' revealed · ' +
     remaining + ' guess' + (remaining !== 1 ? 'es' : '') + ' remaining';
-  document.getElementById('game-search').placeholder = 'Type a player name...';
 }
 
 function setupGameSearch() {
@@ -545,15 +567,21 @@ function setupGameSearch() {
     ).join('');
     sug.classList.add('open');
   });
+
   document.addEventListener('click', e => {
     if (!e.target.closest('#game-search-wrapper')) sug.classList.remove('open');
   });
+
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       const q = input.value.trim();
-      // find exact or first match
       const exact = Object.keys(PLAYERS).find(n => n.toLowerCase() === q.toLowerCase());
-      if (exact) submitGuess(exact);
+      const first = Object.values(PLAYERS).find(p => p.name.toLowerCase().includes(q.toLowerCase()));
+      const target = exact || (first && first.name);
+      if (target) {
+        submitGuess(target);
+        sug.classList.remove('open');
+      }
     }
   });
 }
@@ -562,6 +590,12 @@ function submitGuess(name) {
   if (!gameActive || gameSolved) return;
   const player = PLAYERS[name];
   if (!player) return;
+
+  // Prevent duplicate guesses
+  if (gameGuesses.includes(name)) {
+    document.getElementById('game-feedback').textContent = 'You already guessed ' + name + '!';
+    return;
+  }
 
   document.getElementById('game-input').value = '';
   document.getElementById('game-suggestions').classList.remove('open');
@@ -573,6 +607,7 @@ function submitGuess(name) {
   const item = document.createElement('div');
   item.className = 'game-guess-item ' + (correct ? 'correct' : 'wrong');
   item.innerHTML = player.flag + ' <strong>' + name + '</strong>' +
+    ' <span style="font-size:10px;color:var(--muted)">' + player.nationality + '</span>' +
     (correct ? ' ✅' : ' ❌');
   list.appendChild(item);
   list.scrollTop = list.scrollHeight;
@@ -580,18 +615,18 @@ function submitGuess(name) {
   if (correct) {
     gameSolved = true;
     gameActive = false;
-    revealAnswer(true);
+    setTimeout(() => revealAnswer(true), 600);
   } else if (gameGuesses.length >= gameMaxGuesses) {
     gameActive = false;
-    revealAnswer(false);
+    setTimeout(() => revealAnswer(false), 600);
   } else {
-    // Reveal one more club
+    // Reveal next club
     if (gameRevealIndex < gameMystery.career.length - 1) {
       gameRevealIndex++;
       renderMysteryGlobe();
     }
-    updateGameUI();
-    document.getElementById('game-feedback').textContent = '❌ Not quite. Another club revealed.';
+    updateGameHint();
+    document.getElementById('game-feedback').textContent = '❌ Not quite — another club revealed on the globe.';
   }
 }
 
@@ -600,34 +635,35 @@ function revealAnswer(won) {
   document.getElementById('game-result').classList.remove('hidden');
 
   const mystery = gameMystery;
-  const clubs = mystery.career.map(c => c.flag).join('');
-  const guessRow = gameGuesses.map((g, i) => {
-    if (g === mystery.name) return '🟩';
-    return gameGuesses.indexOf(mystery.name) > i ? '🟥' : '⬛';
-  }).join('');
+  const flags = mystery.career.map(c => c.flag).join('');
+  const guessRow = gameGuesses.map(g => g === mystery.name ? '🟩' : '🟥').join('');
+  const empties = '⬛'.repeat(Math.max(0, gameMaxGuesses - gameGuesses.length));
 
   document.getElementById('game-result-title').textContent = won
     ? '🎉 ' + mystery.name + '!'
     : '😔 It was ' + mystery.name;
   document.getElementById('game-result-subtitle').textContent =
-    mystery.nationality + ' · ' + mystery.position;
-  document.getElementById('game-result-career').textContent = clubs;
+    mystery.nationality + ' · ' + mystery.position + ' · ' + mystery.career.length + ' clubs';
+  document.getElementById('game-result-career').textContent = flags;
   document.getElementById('game-result-guesses').textContent =
-    won ? 'Solved in ' + gameGuesses.length + '/' + gameMaxGuesses + ' guesses' : 'Better luck tomorrow!';
+    won
+      ? 'Solved in ' + gameGuesses.length + '/' + gameMaxGuesses + ' guess' + (gameGuesses.length !== 1 ? 'es' : '')
+      : 'Better luck tomorrow — ' + gameGuesses.length + '/' + gameMaxGuesses + ' used';
 
-  // Build shareable card
   const today = new Date();
-  const dateStr = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-  const shareText = '⚽ Pitchmap Daily — ' + dateStr + '\n' +
-    (won ? '✅ Solved in ' + gameGuesses.length + '/' + gameMaxGuesses : '❌ ' + gameMaxGuesses + '/' + gameMaxGuesses) + '\n' +
-    guessRow + '\n' +
-    clubs + '\n' +
+  const dateStr = today.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  const shareText =
+    '⚽ Pitchmap Daily — ' + dateStr + '\n' +
+    (won ? '✅ ' + gameGuesses.length + '/' + gameMaxGuesses : '❌ ' + gameMaxGuesses + '/' + gameMaxGuesses) + '\n' +
+    guessRow + empties + '\n' +
+    flags + '\n' +
     'pitchmap.vercel.app';
   document.getElementById('game-share-text').value = shareText;
 
-  // Show full career on globe
+  // Show full career arc on globe
   globe.pointsData(mystery.career.map((c, i) => ({
-    lat: c.lat, lng: c.lng, color: won ? '#00ff88' : '#ff4444',
+    lat: c.lat, lng: c.lng,
+    color: won ? '#00ff88' : '#ff4444',
     altitude: 0.05, radius: 0.55, clubIndex: i
   })));
   const arcs = mystery.career.slice(0, -1).map((c, i) => ({
@@ -645,13 +681,15 @@ function copyGameShare() {
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.getElementById('copy-share-btn');
     btn.textContent = 'Copied! ✓';
-    setTimeout(() => btn.textContent = 'Copy Result', 2000);
+    setTimeout(() => btn.textContent = 'Copy Result', 2200);
   });
 }
 
 function exitGame() {
   gameActive = false;
+  gameSolved = false;
   gameMystery = null;
+  gameGuesses = [];
   document.getElementById('game-panel').classList.add('hidden');
   document.getElementById('landing').classList.remove('hidden');
   globe.pointsData([]);
@@ -675,7 +713,7 @@ yearSlider.addEventListener('input', () => {
 });
 
 // ============================================================
-// TIMELINE
+// CAREER TIMELINE
 // ============================================================
 function buildTimeline(player) {
   const tl = document.getElementById('career-timeline');
@@ -683,7 +721,7 @@ function buildTimeline(player) {
   player.career.forEach((club, i) => {
     const item = document.createElement('div');
     item.className = 'timeline-item' + (i === 0 ? ' active' : '');
-    item.style.animationDelay = (i * 60) + 'ms';
+    item.style.animationDelay = (i * 55) + 'ms';
     item.innerHTML =
       '<span class="ti-flag">' + club.flag + '</span>' +
       '<div class="ti-dot"></div>' +
@@ -705,15 +743,17 @@ document.getElementById('btn-next').addEventListener('click', () => goToClub(cur
 document.getElementById('share-btn').addEventListener('click', () => {
   if (!currentPlayer) return;
   const p = currentPlayer;
-  const text = p.flag + ' ' + p.name + ' · Pitchmap\n' +
-    p.career.map(c => c.flag + ' ' + c.club).join(' → ') + '\n' +
-    p.career.length + ' clubs · ' + p.career.reduce((s, c) => s + c.goals, 0) + ' goals\n' +
-    window.location.href;
+  const text =
+    p.flag + ' ' + p.name + ' — Career on Pitchmap\n' +
+    p.career.map(c => c.flag + ' ' + c.club + ' (' + c.from + '–' + (c.to || 'now') + ')').join('\n') + '\n' +
+    p.career.length + ' clubs · ' + p.career.reduce((s, c) => s + c.goals, 0) + ' goals · ' +
+    p.career.reduce((s, c) => s + c.apps, 0) + ' apps\n' +
+    'pitchmap.vercel.app';
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
       const b = document.getElementById('share-btn');
       b.textContent = 'Copied ✓';
-      setTimeout(() => b.textContent = 'Share ↗', 2000);
+      setTimeout(() => b.textContent = 'Share ↗', 2200);
     });
   }
 });
@@ -732,9 +772,10 @@ function showBreadcrumb(text) {
 initGlobe();
 setupGameSearch();
 
-// Pre-select today's game hint on landing
+// Set today's daily hint on landing
 const todayName = getDailyPlayerName();
 if (PLAYERS[todayName]) {
+  const p = PLAYERS[todayName];
   document.getElementById('daily-game-hint').textContent =
-    '⚽ Today\'s mystery player: ' + PLAYERS[todayName].career.length + ' clubs';
+    p.flag + ' ' + p.career.length + ' clubs · ' + p.nationality + ' · Guess who!';
 }

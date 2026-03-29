@@ -529,6 +529,10 @@ const PLAYER_NATIONAL_TEAMS = {
   'Gianluigi Buffon': 'Italy',
   'Franck Ribéry': 'France',
   'Arjen Robben': 'Netherlands',
+  'Xavi': 'Spain',
+  'Harry Kane': 'England',
+  'Paul Pogba': 'France',
+  'Raheem Sterling': 'England',
 };
 
 // ---- PLAYERS ----
@@ -1131,6 +1135,147 @@ const PLAYERS = {
         drama: 'Quiet finale. The loudest career ended with grace.',
         highlight: 'Retired 2024. One of the sport\'s all-time great players.',
         teammates: ['Luís Figo (honorary)', 'Various UAE youth players'] },
+    ]
+  },
+
+
+  // ============================================================
+  'Ronaldo Nazário': {
+    name: 'Ronaldo Nazário', nationality: 'Brazilian', flag: '🇧🇷',
+    born: 'Rio de Janeiro, Brazil', dob: '1976-09-18', position: 'Striker',
+    career: [
+      { club: 'Cruzeiro', country: 'Brazil', city: 'Belo Horizonte', flag: '🇧🇷', lat: -19.865, lng: -43.971, from: 1993, to: 1994, apps: 47, goals: 44, assists: 12,
+        funFact: '44 goals in 47 games at 17 years old. Before Europe had even heard his name, Brazil already knew.',
+        drama: 'PSV Eindhoven paid €6M — a major fee for a 17-year-old who had played fewer than 50 games.',
+        highlight: 'Copa do Brasil winner. 44 goals. Scouts across Europe had one name on their lips.',
+        teammates: ['Márcio Santos', 'Viola', 'Paulo Roberto', 'Charles'] },
+      { club: 'PSV Eindhoven', country: 'Netherlands', city: 'Eindhoven', flag: '🇳🇱', lat: 51.442, lng: 5.467, from: 1994, to: 1996, apps: 58, goals: 55, assists: 22,
+        funFact: '55 goals in 58 games. It remains one of the most staggering debut spells by a teenager in European football history.',
+        drama: 'Barcelona opened negotiations before his second season had ended. The fee — €19.5M — was continental news.',
+        highlight: 'Eredivisie top scorer. Bobby Robson flew from Barcelona just to confirm he was real.',
+        teammates: ['Jan Heintze', 'Wim Jonk', 'Luc Nilis', 'John de Wolf'] },
+      { club: 'Barcelona', country: 'Spain', city: 'Barcelona', flag: '🇪🇸', lat: 41.381, lng: 2.123, from: 1996, to: 1997, apps: 49, goals: 47, assists: 15,
+        funFact: 'Won the Copa del Rey and UEFA Cup Winners Cup in a single season. FIFA World Player of the Year at 20.',
+        drama: 'One incredible season. Then Inter Milan won a legal battle for his services. Bobby Robson was furious.',
+        highlight: 'FIFA World Player of the Year 1996. Copa del Rey. UEFA Cup Winners Cup. 47 goals. In one year.',
+        teammates: ['Luis Figo', 'Pep Guardiola', 'Laurent Blanc', 'Luis Enrique'] },
+      { club: 'Inter Milan', country: 'Italy', city: 'Milan', flag: '🇮🇹', lat: 45.478, lng: 9.124, from: 1997, to: 2002, apps: 99, goals: 59, assists: 21,
+        funFact: 'Won FIFA World Player of the Year in 1997 and 2002. Injury robbed him of his peak — but he came back anyway.',
+        drama: 'A devastating ACL injury in 1999 sparked a convulsion on the pitch in front of 80,000 fans. Many feared he would never play again.',
+        highlight: 'FIFA World Player of Year 1997. Two ACL injuries survived. The comeback no one believed possible.',
+        teammates: ['Roberto Baggio', 'Javier Zanetti', 'Christian Vieri', 'Youri Djorkaeff'] },
+      { club: 'Real Madrid', country: 'Spain', city: 'Madrid', flag: '🇪🇸', lat: 40.453, lng: -3.689, from: 2002, to: 2007, apps: 177, goals: 104, assists: 39,
+        funFact: 'Won the 2002 World Cup before his Real Madrid debut. Arrived as the most famous footballer alive.',
+        drama: 'The 2002 World Cup. His hair. The hat-trick. The goal vs Germany in the final. Literally a different species.',
+        highlight: '2 La Ligas. FIFA World Player of Year x3. 2002 World Cup Golden Boot. The legend cemented.',
+        teammates: ['Zinedine Zidane', 'Luis Figo', 'Roberto Carlos', 'Raul'] },
+      { club: 'AC Milan', country: 'Italy', city: 'Milan', flag: '🇮🇹', lat: 45.478, lng: 9.124, from: 2007, to: 2008, apps: 20, goals: 9, assists: 4,
+        funFact: 'Scored on his debut against Livorno. Even at the end, the magic was visible in flashes.',
+        drama: 'Weight and injury struggles limited his appearances. He left for Brazil at 31.',
+        highlight: 'A swansong in red and black. Goodbye on his own terms.',
+        teammates: ['Ronaldinho', 'Kaka', 'Alexandre Pato', 'Andrea Pirlo'] },
+      { club: 'Corinthians', country: 'Brazil', city: 'Sao Paulo', flag: '🇧🇷', lat: -23.546, lng: -46.477, from: 2009, to: 2011, apps: 69, goals: 34, assists: 12,
+        funFact: 'Won the Brazilian championship with Corinthians in 2011. The retirement press conference left every journalist in tears.',
+        drama: 'His farewell speech: the most honest, emotional goodbye in football. Not a performance. Just truth.',
+        highlight: 'Brazilian title 2011. The farewell the football world deserved.',
+        teammates: ['Alessandro', 'Dentinho', 'Jorge Henrique', 'Paulinho'] },
+    ]
+  },
+
+  // ============================================================
+  'Xavi': {
+    name: 'Xavi', nationality: 'Spanish', flag: '🇪🇸',
+    born: 'Terrassa, Spain', dob: '1980-01-25', position: 'Midfielder',
+    career: [
+      { club: 'Barcelona', country: 'Spain', city: 'Barcelona', flag: '🇪🇸', lat: 41.381, lng: 2.123, from: 1998, to: 2015, apps: 767, goals: 85, assists: 185,
+        funFact: '767 games for Barcelona. The metronome that Guardiola built his system around. Manchester United offered a fortune — Xavi said no.',
+        drama: 'Barcelona rejected a massive United offer when Ronaldo left. Xavi stayed. Football history was written instead.',
+        highlight: '8 La Ligas, 4 UCL titles. World Cup 2010. Euro 2008 and 2012. The greatest passer in football history.',
+        teammates: ['Andres Iniesta', 'Lionel Messi', 'Ronaldinho', 'Deco'] },
+      { club: 'Al Sadd', country: 'Qatar', city: 'Doha', flag: '🇶🇦', lat: 25.284, lng: 51.511, from: 2015, to: 2019, apps: 102, goals: 14, assists: 33,
+        funFact: 'Became Al Sadd player-manager. Learned to lead from the front in a completely different football environment.',
+        drama: 'The call from Barcelona came in 2021 — not as a player but as manager. He answered immediately.',
+        highlight: 'Qatar Stars League title. Emir Cup. The transition from icon to coach.',
+        teammates: ['Andre Ayew', 'Santi Cazorla', 'Rodrigo Tabata', 'Gabi'] },
+      { club: 'Barcelona', country: 'Spain', city: 'Barcelona', flag: '🇪🇸', lat: 41.381, lng: 2.123, from: 2021, to: 2024, apps: 0, goals: 0, assists: 0,
+        funFact: 'Returned as manager. Won La Liga 2022-23. Introduced Lamine Yamal to the world. Left in 2024.',
+        drama: 'Announced resignation then reversed it. Eventually parted ways. Management is harder than playing.',
+        highlight: 'La Liga title 2022-23 as manager. Barcelona rebuilt around youth. The DNA restored.',
+        teammates: ['Robert Lewandowski', 'Pedri', 'Gavi', 'Lamine Yamal'] },
+    ]
+  },
+
+  // ============================================================
+  'Harry Kane': {
+    name: 'Harry Kane', nationality: 'English', flag: '🏴',
+    born: 'Chingford, London', dob: '1993-07-28', position: 'Striker',
+    career: [
+      { club: 'Tottenham', country: 'England', city: 'London', flag: '🏴', lat: 51.604, lng: -0.066, from: 2009, to: 2023, apps: 435, goals: 280, assists: 62,
+        funFact: 'Had loan spells at 4 different clubs before becoming Tottenham starter at 21. Patience is underrated.',
+        drama: '2021 transfer request. Man City bid 100M. Spurs rejected it. He stayed. Won nothing. Left for Munich two years later.',
+        highlight: '280 goals — Spurs all-time record. 2 PL Golden Boots. UCL finalist 2019. The one-club nearly-man.',
+        teammates: ['Heung-min Son', 'Dele Alli', 'Hugo Lloris', 'Christian Eriksen'] },
+      { club: 'Bayern Munich', country: 'Germany', city: 'Munich', flag: '🇩🇪', lat: 48.219, lng: 11.625, from: 2023, to: null, apps: 80, goals: 70, assists: 22,
+        funFact: '36 Bundesliga goals in his debut campaign — a new record for any player in their first Bundesliga season.',
+        drama: 'Bundesliga runner-up on the final day of his first season. The trophy curse follows him to Germany.',
+        highlight: 'Bundesliga record debut: 36 goals in 2023-24. The scoring continues. The trophy still waits.',
+        teammates: ['Jamal Musiala', 'Leroy Sane', 'Joshua Kimmich', 'Thomas Muller'] },
+    ]
+  },
+
+  // ============================================================
+  'Paul Pogba': {
+    name: 'Paul Pogba', nationality: 'French', flag: '🇫🇷',
+    born: 'Lagny-sur-Marne, France', dob: '1993-03-15', position: 'Midfielder',
+    career: [
+      { club: 'Manchester Utd', country: 'England', city: 'Manchester', flag: '🏴', lat: 53.463, lng: -2.292, from: 2011, to: 2012, apps: 7, goals: 1, assists: 1,
+        funFact: 'Sir Alex Ferguson released him on a free. Ferguson later admitted it was one of his biggest regrets.',
+        drama: 'United let him go for nothing. Juventus took him. United paid 89M to get him back four years later.',
+        highlight: 'The beginning. The teenager who refused to wait his turn.',
+        teammates: ['Ryan Giggs', 'Michael Carrick', 'Wayne Rooney', 'Robin van Persie'] },
+      { club: 'Juventus', country: 'Italy', city: 'Turin', flag: '🇮🇹', lat: 45.109, lng: 7.641, from: 2012, to: 2016, apps: 178, goals: 34, assists: 40,
+        funFact: 'Won 4 consecutive Serie A titles and was named Best Young Player at the 2014 World Cup. The world was watching.',
+        drama: 'United came back with 89M — then a world record for a midfielder. Turin said goodbye reluctantly.',
+        highlight: '4 Serie A titles. 2 Coppa Italias. Best Young Player World Cup 2014. The absolute peak.',
+        teammates: ['Andrea Pirlo', 'Carlos Tevez', 'Alvaro Morata', 'Gianluigi Buffon'] },
+      { club: 'Manchester Utd', country: 'England', city: 'Manchester', flag: '🏴', lat: 53.463, lng: -2.292, from: 2016, to: 2022, apps: 233, goals: 39, assists: 51,
+        funFact: 'Europa League winner, EFL Cup, World Cup 2018 champion. The talent gap between what Pogba was and what he could have been became football biggest debate.',
+        drama: 'Four-year WADA doping ban in 2023. The career ended before the Juventus second chapter could truly begin.',
+        highlight: 'Europa League 2017. EFL Cup. World Cup 2018 champion with France.',
+        teammates: ['Bruno Fernandes', 'Marcus Rashford', 'Romelu Lukaku', 'Juan Mata'] },
+      { club: 'Juventus', country: 'Italy', city: 'Turin', flag: '🇮🇹', lat: 45.109, lng: 7.641, from: 2022, to: 2024, apps: 10, goals: 1, assists: 2,
+        funFact: 'The comeback cut short by a WADA doping ban. A sad final chapter to one of football greatest talents.',
+        drama: 'Returned to the club that made him great. Then banned for four years. Career over.',
+        highlight: 'Remembered for the brilliance, not the ending.',
+        teammates: ['Dusan Vlahovic', 'Federico Chiesa', 'Adrien Rabiot', 'Angel Di Maria'] },
+    ]
+  },
+
+  // ============================================================
+  'Raheem Sterling': {
+    name: 'Raheem Sterling', nationality: 'English', flag: '🏴',
+    born: 'Kingston, Jamaica', dob: '1994-12-08', position: 'Winger',
+    career: [
+      { club: 'Liverpool', country: 'England', city: 'Liverpool', flag: '🏴', lat: 53.431, lng: -2.961, from: 2012, to: 2015, apps: 129, goals: 23, assists: 30,
+        funFact: 'Forced a move at 20 via a leaked contract interview. Liverpool fans furious. Man City delighted.',
+        drama: 'Published his salary demands. Worst transfer exit since Judas. Then proved everyone wrong.',
+        highlight: 'UCL semi-final 2015. FWA Young Player of the Year. The raw talent before the refinement.',
+        teammates: ['Steven Gerrard', 'Luis Suarez', 'Daniel Sturridge', 'Philippe Coutinho'] },
+      { club: 'Manchester City', country: 'England', city: 'Manchester', flag: '🏴', lat: 53.483, lng: -2.200, from: 2015, to: 2022, apps: 339, goals: 131, assists: 94,
+        funFact: 'Signed for 49M. Over 7 years won 4 Premier League titles and became one of the world best wide players.',
+        drama: 'Sterling publicly called out unfair media bias. A watershed moment for football journalism and race.',
+        highlight: '4 PL titles, 1 FA Cup, 4 League Cups. 131 goals. Completely rebuilt himself.',
+        teammates: ['Kevin De Bruyne', 'Leroy Sane', 'Bernardo Silva', 'Riyad Mahrez'] },
+      { club: 'Chelsea', country: 'England', city: 'London', flag: '🏴', lat: 51.482, lng: -0.191, from: 2022, to: 2024, apps: 71, goals: 19, assists: 13,
+        funFact: 'Bought for 47.5M, struggled under four different managers. The Boehly era claimed another victim.',
+        drama: 'Loaned to Arsenal in January 2025 as his Chelsea career stalled completely.',
+        highlight: 'International-class performer who never found his system at Stamford Bridge.',
+        teammates: ['Cole Palmer', 'Nicolas Jackson', 'Reece James', 'Enzo Fernandez'] },
+      { club: 'Arsenal', country: 'England', city: 'London', flag: '🏴', lat: 51.555, lng: -0.108, from: 2025, to: null, apps: 15, goals: 6, assists: 5,
+        funFact: 'Loan from Chelsea. Arteta immediately unlocked him. The London redemption arc is underway.',
+        drama: 'At 30, back to form under the manager who knows exactly how to use him.',
+        highlight: 'Rejuvenated under Arteta. The class remains. One more chapter still to write.',
+        teammates: ['Bukayo Saka', 'Martin Odegaard', 'Declan Rice', 'Gabriel Martinelli'] },
     ]
   },
 
