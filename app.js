@@ -1,5 +1,5 @@
 // ============================================================
-// PITCHMAP v6 — Seamless Globe Navigation + Daily Game
+// PITCHMAP v7 — Seamless Globe Navigation + Daily Wordle Game
 // All navigation = interpolated camera moves. Zero hard resets.
 // ============================================================
 
@@ -18,6 +18,7 @@ let currentClubIndex = 0;
 let currentYear = 2024;
 let popupTimeout = null;
 let flyTimeout = null;
+let cameraLocked = false;
 
 // ---- GAME STATE ----
 let gameActive = false;
@@ -64,7 +65,8 @@ function initGlobe() {
 }
 
 // ============================================================
-// SEAMLESS CAMERA — every navigation is interpolated
+// SEAMLESS CAMERA — every navigation is an interpolated move
+// No hard resets. Ever.
 // ============================================================
 function flyTo(lat, lng, altitude, durationMs, callback) {
   if (!globe) return;
@@ -113,6 +115,10 @@ const COUNTRY_CENTERS = {
   'Poland':   { lat: 52.0,  lng: 20.0,  zoom: 6 },
   'Monaco':   { lat: 43.74, lng: 7.43,  zoom: 13 },
   'Qatar':    { lat: 25.3,  lng: 51.5,  zoom: 9 },
+  'Egypt':    { lat: 26.8,  lng: 30.8,  zoom: 6 },
+  'Senegal':  { lat: 14.5,  lng: -14.4, zoom: 7 },
+  'Switzerland': { lat: 47.0, lng: 8.2, zoom: 8 },
+  'Italy (Rome)': { lat: 41.9, lng: 12.5, zoom: 10 },
 };
 
 // ============================================================
@@ -203,7 +209,6 @@ function renderClubSquad(club, year) {
   const years = Object.keys(club.squad || {}).sort();
   let squad = club.squad && club.squad[yr];
   if (!squad && years.length) {
-    // find closest year
     const closest = years.reduce((a, b) =>
       Math.abs(parseInt(b) - year) < Math.abs(parseInt(a) - year) ? b : a
     );
@@ -303,9 +308,9 @@ function showPlayer(player) {
 
   const nt = PLAYER_NATIONAL_TEAMS[player.name];
   const ntBtn = document.getElementById('nt-btn');
-  if (nt) {
+  if (nt && NATIONAL_TEAMS[nt]) {
     const team = NATIONAL_TEAMS[nt];
-    ntBtn.textContent = (team ? team.flag : '🌍') + ' ' + nt;
+    ntBtn.textContent = team.flag + ' ' + nt;
     ntBtn.style.display = 'inline-flex';
     ntBtn.onclick = () => openNationalTeam(nt);
   } else {
@@ -362,7 +367,7 @@ function goToClub(index) {
 
   globe.labelsData([{ lat: club.lat + 0.8, lng: club.lng, text: club.city + ', ' + club.country }]);
 
-  // Seamless camera interpolation — never a hard reset
+  // Seamless camera — always interpolated, never snapping
   flyTo(club.lat, club.lng, 0.5, 1800);
 
   clearTimeout(popupTimeout);
@@ -410,9 +415,9 @@ function openDeepDive() {
   document.getElementById('dd-apps').textContent = club.apps;
   document.getElementById('dd-goals').textContent = club.goals;
   document.getElementById('dd-assists').textContent = club.assists;
-  document.getElementById('dd-funfact').textContent = club.funFact || '';
-  document.getElementById('dd-drama').textContent = club.drama || '';
-  document.getElementById('dd-highlight').textContent = club.highlight || '';
+  document.getElementById('dd-funfact').textContent = club.funFact || '—';
+  document.getElementById('dd-drama').textContent = club.drama || '—';
+  document.getElementById('dd-highlight').textContent = club.highlight || '—';
   document.getElementById('deep-dive').classList.remove('hidden');
 }
 
@@ -504,6 +509,7 @@ function startDailyGame() {
 
   renderMysteryGlobe();
   updateGameHint();
+  document.getElementById('game-input').focus();
 }
 
 function renderMysteryGlobe() {
@@ -537,7 +543,7 @@ function renderMysteryGlobe() {
     text: gameRevealIndex < 2 ? c.country : c.city + ', ' + c.country
   })));
 
-  // Fly to last revealed club
+  // Fly to last revealed club (seamless, always interpolated)
   const last = visible[visible.length - 1];
   flyTo(last.lat, last.lng, 0.7, 1400);
 }
@@ -545,9 +551,12 @@ function renderMysteryGlobe() {
 function updateGameHint() {
   const remaining = gameMaxGuesses - gameGuesses.length;
   const revealed = Math.min(gameRevealIndex + 1, gameMystery.career.length);
-  document.getElementById('game-hint').textContent =
-    'Club ' + revealed + ' of ' + gameMystery.career.length + ' revealed · ' +
-    remaining + ' guess' + (remaining !== 1 ? 'es' : '') + ' remaining';
+  const hintsEl = document.getElementById('game-hint');
+  if (hintsEl) {
+    hintsEl.textContent =
+      'Club ' + revealed + ' of ' + gameMystery.career.length + ' revealed · ' +
+      remaining + ' guess' + (remaining !== 1 ? 'es' : '') + ' remaining';
+  }
 }
 
 function setupGameSearch() {
@@ -559,7 +568,7 @@ function setupGameSearch() {
     if (!q) { sug.classList.remove('open'); return; }
     const matches = Object.values(PLAYERS).filter(p => p.name.toLowerCase().includes(q));
     if (!matches.length) { sug.classList.remove('open'); return; }
-    sug.innerHTML = matches.slice(0, 6).map(p =>
+    sug.innerHTML = matches.slice(0, 8).map(p =>
       '<div class="suggestion-item" onclick="submitGuess(\'' + p.name.replace(/'/g, "\\'") + '\')">' +
       '<span class="s-flag">' + p.flag + '</span>' +
       '<span class="s-name">' + p.name + '</span>' +
@@ -581,6 +590,8 @@ function setupGameSearch() {
       if (target) {
         submitGuess(target);
         sug.classList.remove('open');
+      } else if (q) {
+        document.getElementById('game-feedback').textContent = 'Player not found — try another name.';
       }
     }
   });
@@ -593,12 +604,13 @@ function submitGuess(name) {
 
   // Prevent duplicate guesses
   if (gameGuesses.includes(name)) {
-    document.getElementById('game-feedback').textContent = 'You already guessed ' + name + '!';
+    document.getElementById('game-feedback').textContent = 'Already guessed ' + name + '.';
     return;
   }
 
   document.getElementById('game-input').value = '';
   document.getElementById('game-suggestions').classList.remove('open');
+  document.getElementById('game-feedback').textContent = '';
 
   gameGuesses.push(name);
 
@@ -609,24 +621,27 @@ function submitGuess(name) {
   item.innerHTML = player.flag + ' <strong>' + name + '</strong>' +
     ' <span style="font-size:10px;color:var(--muted)">' + player.nationality + '</span>' +
     (correct ? ' ✅' : ' ❌');
-  list.appendChild(item);
-  list.scrollTop = list.scrollHeight;
+  list.insertBefore(item, list.firstChild);
 
   if (correct) {
     gameSolved = true;
     gameActive = false;
-    setTimeout(() => revealAnswer(true), 600);
+    document.getElementById('game-feedback').textContent = '🎉 Correct!';
+    setTimeout(() => revealAnswer(true), 900);
   } else if (gameGuesses.length >= gameMaxGuesses) {
     gameActive = false;
-    setTimeout(() => revealAnswer(false), 600);
+    document.getElementById('game-feedback').textContent = '❌ Out of guesses.';
+    setTimeout(() => revealAnswer(false), 900);
   } else {
-    // Reveal next club
+    // Reveal next club on globe
     if (gameRevealIndex < gameMystery.career.length - 1) {
       gameRevealIndex++;
       renderMysteryGlobe();
     }
     updateGameHint();
-    document.getElementById('game-feedback').textContent = '❌ Not quite — another club revealed on the globe.';
+    const hint = gameRevealIndex < 2 ? 'Another country dot revealed.' : 'City + country now shown.';
+    document.getElementById('game-feedback').textContent = '❌ Not quite — ' + hint;
+    document.getElementById('game-input').focus();
   }
 }
 
@@ -660,7 +675,7 @@ function revealAnswer(won) {
     'pitchmap.vercel.app';
   document.getElementById('game-share-text').value = shareText;
 
-  // Show full career arc on globe
+  // Show full career arc on globe with colour based on win/loss
   globe.pointsData(mystery.career.map((c, i) => ({
     lat: c.lat, lng: c.lng,
     color: won ? '#00ff88' : '#ff4444',
@@ -740,6 +755,30 @@ function buildTimeline(player) {
 document.getElementById('btn-prev').addEventListener('click', () => goToClub(currentClubIndex - 1));
 document.getElementById('btn-next').addEventListener('click', () => goToClub(currentClubIndex + 1));
 
+// Keyboard shortcuts: arrow keys for career navigation
+document.addEventListener('keydown', e => {
+  if (activeMode !== 'player') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    if (currentPlayer && currentClubIndex < currentPlayer.career.length - 1) goToClub(currentClubIndex + 1);
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    if (currentPlayer && currentClubIndex > 0) goToClub(currentClubIndex - 1);
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('player-panel').classList.add('hidden');
+    document.getElementById('club-card').classList.add('hidden');
+    document.getElementById('teammates-panel').classList.add('hidden');
+    globe.pointsData([]); globe.arcsData([]); globe.labelsData([]);
+    globe.controls().autoRotate = true;
+    activeMode = 'globe';
+    document.getElementById('landing').classList.remove('hidden');
+    document.getElementById('share-btn').style.display = 'none';
+  }
+});
+
 document.getElementById('share-btn').addEventListener('click', () => {
   if (!currentPlayer) return;
   const p = currentPlayer;
@@ -776,6 +815,6 @@ setupGameSearch();
 const todayName = getDailyPlayerName();
 if (PLAYERS[todayName]) {
   const p = PLAYERS[todayName];
-  document.getElementById('daily-game-hint').textContent =
-    p.flag + ' ' + p.career.length + ' clubs · ' + p.nationality + ' · Guess who!';
+  const hintEl = document.getElementById('daily-game-hint');
+  if (hintEl) hintEl.textContent = p.flag + ' ' + p.career.length + ' clubs · ' + p.nationality + ' · Guess who!';
 }

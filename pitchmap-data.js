@@ -486,6 +486,41 @@ const NATIONAL_TEAMS = {
       { name: 'Manuel Neuer', position: 'Goalkeeper', flag: '🇩🇪', caps: 124, goals: 0 },
     ]
   },
+  'Spain': {
+    name: 'Spain', flag: '🇪🇸', color: '#AA151B', founded: 1913, confederation: 'UEFA',
+    tournaments: [
+      { year: 2010, competition: 'FIFA World Cup', result: '🏆 Champions', topScorer: 'David Villa (5 goals, Golden Boot)' },
+      { year: 2008, competition: 'UEFA Euro', result: '🏆 Champions', topScorer: 'David Villa (4 goals)' },
+      { year: 2012, competition: 'UEFA Euro', result: '🏆 Champions', topScorer: 'Fernando Torres (3 goals)' },
+      { year: 2024, competition: 'UEFA Euro', result: '🏆 Champions', topScorer: 'Dani Olmo (3 goals)' },
+    ],
+    allTimeGreats: ['Xavi', 'Andrés Iniesta', 'Sergio Ramos', 'David Villa', 'Raúl'],
+    currentSquad: [
+      { name: 'Lamine Yamal', position: 'Winger', flag: '🇪🇸', caps: 18, goals: 7 },
+      { name: 'Pedri', position: 'Midfielder', flag: '🇪🇸', caps: 41, goals: 4 },
+      { name: 'Rodri', position: 'Midfielder', flag: '🇪🇸', caps: 61, goals: 6 },
+      { name: 'Álvaro Morata', position: 'Striker', flag: '🇪🇸', caps: 82, goals: 37 },
+      { name: 'Dani Carvajal', position: 'Defender', flag: '🇪🇸', caps: 50, goals: 3 },
+    ]
+  },
+  'Italy': {
+    name: 'Italy', flag: '🇮🇹', color: '#0066CC', founded: 1898, confederation: 'UEFA',
+    tournaments: [
+      { year: 2021, competition: 'UEFA Euro', result: '🏆 Champions', topScorer: 'Lorenzo Insigne / Ciro Immobile' },
+      { year: 2006, competition: 'FIFA World Cup', result: '🏆 Champions', topScorer: 'Luca Toni (2 goals)' },
+      { year: 1982, competition: 'FIFA World Cup', result: '🏆 Champions', topScorer: 'Paolo Rossi (6 goals)' },
+      { year: 2024, competition: 'UEFA Euro', result: 'Round of 16 (holders)', topScorer: 'Mattia Zaccagni (2 goals)' },
+    ],
+    allTimeGreats: ['Paolo Maldini', 'Roberto Baggio', 'Gianluigi Buffon', 'Andrea Pirlo', 'Alessandro Del Piero'],
+    currentSquad: [
+      { name: 'Gianluigi Donnarumma', position: 'Goalkeeper', flag: '🇮🇹', caps: 68, goals: 0 },
+      { name: 'Federico Chiesa', position: 'Winger', flag: '🇮🇹', caps: 55, goals: 18 },
+      { name: 'Nicolo Barella', position: 'Midfielder', flag: '🇮🇹', caps: 72, goals: 9 },
+      { name: 'Ciro Immobile', position: 'Striker', flag: '🇮🇹', caps: 62, goals: 17 },
+      { name: 'Alessandro Bastoni', position: 'Defender', flag: '🇮🇹', caps: 38, goals: 2 },
+    ]
+  },
+
   'England': {
     name: 'England', flag: '🏴', color: '#CF081F', founded: 1863, confederation: 'UEFA',
     tournaments: [
@@ -533,6 +568,11 @@ const PLAYER_NATIONAL_TEAMS = {
   'Harry Kane': 'England',
   'Paul Pogba': 'France',
   'Raheem Sterling': 'England',
+  'Mohamed Salah': 'Egypt',
+  'Toni Kroos': 'Germany',
+  'Sergio Ramos': 'Spain',
+  'Andrea Pirlo': 'Italy',
+  'Sadio Mané': 'Senegal',
 };
 
 // ---- PLAYERS ----
@@ -1276,6 +1316,161 @@ const PLAYERS = {
         drama: 'At 30, back to form under the manager who knows exactly how to use him.',
         highlight: 'Rejuvenated under Arteta. The class remains. One more chapter still to write.',
         teammates: ['Bukayo Saka', 'Martin Odegaard', 'Declan Rice', 'Gabriel Martinelli'] },
+    ]
+  },
+
+// ============================================================
+  'Mohamed Salah': {
+    name: 'Mohamed Salah', nationality: 'Egyptian', flag: '🇪🇬',
+    born: 'Nagrig, Egypt', dob: '1992-06-15', position: 'Winger',
+    career: [
+      { club: 'Al Mokawloon', country: 'Egypt', city: 'Cairo', flag: '🇪🇬', lat: 30.065, lng: 31.249, from: 2010, to: 2012, apps: 45, goals: 13, assists: 8,
+        funFact: "Egypt's most watched youth talent. Basel scouts saw him in the 2011 Arab Youth Championship and flew him to Switzerland.",
+        drama: 'Moving from Egypt to Switzerland at 19 — a cultural and footballing leap few teenagers could handle.',
+        highlight: 'Led Al Mokawloon to Egyptian Premier League title. The foundation of everything.',
+        teammates: ['Ahmed Fathy', 'Amr Zaki', 'Mohamed Aboutrika', 'Hazem Emam'] },
+      { club: 'Basel', country: 'Switzerland', city: 'Basel', flag: '🇨🇭', lat: 47.541, lng: 7.619, from: 2012, to: 2014, apps: 79, goals: 20, assists: 16,
+        funFact: 'Scored in both legs vs Chelsea in the Champions League. Chelsea immediately signed him. Full circle moment.',
+        drama: '£11M to Chelsea. At 21, the biggest moment of his life.',
+        highlight: 'Swiss championship twice. Those UCL goals vs Chelsea changed his career forever.',
+        teammates: ['Marco Streller', 'Xherdan Shaqiri', 'Fabian Frei', 'Derlis González'] },
+      { club: 'Chelsea', country: 'England', city: 'London', flag: '🏴', lat: 51.482, lng: -0.191, from: 2014, to: 2016, apps: 19, goals: 2, assists: 4,
+        funFact: "Mourinho didn't trust him. 19 appearances, loaned twice. Then Liverpool paid £36.9M and the rest is history.",
+        drama: "One of football's most dramatic \"what if\" transfers. Mourinho's biggest miss.",
+        highlight: 'The Chelsea chapter hurt. It also built the hunger that drove everything after.',
+        teammates: ['Eden Hazard', 'Didier Drogba', 'Cesc Fàbregas', 'Diego Costa'] },
+      { club: 'Fiorentina', country: 'Italy', city: 'Florence', flag: '🇮🇹', lat: 43.780, lng: 11.282, from: 2015, to: 2015, apps: 26, goals: 9, assists: 5,
+        funFact: 'Serie A loan unlocked the clinical edge Chelsea never found. He was transformed.',
+        drama: 'Florence fell in love with him. He chose Liverpool over returning.',
+        highlight: '9 goals in 26 Serie A games. The Italian sun agreed with him.',
+        teammates: ['Mario Gómez', 'Josip Iličić', 'Juan Cuadrado', 'Marcos Alonso'] },
+      { club: 'AS Roma', country: 'Italy', city: 'Rome', flag: '🇮🇹', lat: 41.934, lng: 12.455, from: 2015, to: 2017, apps: 83, goals: 34, assists: 23,
+        funFact: 'Serie A Player of the Year. His 15 goals forced Liverpool to break their transfer record.',
+        drama: 'Liverpool paid £36.9M — then their club record. Then he repaid it 100 times over.',
+        highlight: 'Serie A Player of the Year 2016-17. The season that launched the legend.',
+        teammates: ['Francesco Totti', 'Radja Nainggolan', 'Edin Džeko', 'Diego Perotti'] },
+      { club: 'Liverpool', country: 'England', city: 'Liverpool', flag: '🏴', lat: 53.431, lng: -2.961, from: 2017, to: null, apps: 357, goals: 233, assists: 95,
+        funFact: '44 goals in his first Premier League season — a new record. They called him the Egyptian King.',
+        drama: 'UCL Final 2018 — shoulder injury from Ramos foul in the first half. Watched Liverpool lose in tears.',
+        highlight: 'UCL winner 2019. PL title 2019-20. 233 goals. PL all-time leading scorer. The greatest ever at Anfield.',
+        teammates: ['Sadio Mané', 'Roberto Firmino', 'Virgil van Dijk', 'Trent Alexander-Arnold'] },
+    ]
+  },
+
+  // ============================================================
+  'Toni Kroos': {
+    name: 'Toni Kroos', nationality: 'German', flag: '🇩🇪',
+    born: 'Greifswald, Germany', dob: '1990-01-04', position: 'Midfielder',
+    career: [
+      { club: 'Bayern Munich', country: 'Germany', city: 'Munich', flag: '🇩🇪', lat: 48.219, lng: 11.625, from: 2007, to: 2014, apps: 183, goals: 23, assists: 50,
+        funFact: 'Loaned to Bayer Leverkusen and performed so well Bayern had to take him back — and then he left anyway.',
+        drama: 'Wanted more playing time. Bayern refused to promise it. Real Madrid offered guaranteed starts.',
+        highlight: 'UCL winner 2013. Bundesliga × 4. World Cup winner 2014 with Germany. The platform was perfect.',
+        teammates: ['Franck Ribéry', 'Arjen Robben', 'Thomas Müller', 'Bastian Schweinsteiger'] },
+      { club: 'Real Madrid', country: 'Spain', city: 'Madrid', flag: '🇪🇸', lat: 40.453, lng: -3.689, from: 2014, to: 2024, apps: 463, goals: 28, assists: 110,
+        funFact: 'Retired in 2022. Came back in 2023 for one final season because Real needed him. Could not help himself.',
+        drama: 'His free kick in stoppage time vs Sweden in the 2018 World Cup qualifier. 90+5. Germany qualified. The internet exploded.',
+        highlight: '4 UCL titles. 3 La Ligas. The most pass-accurate midfielder in European football history.',
+        teammates: ['Cristiano Ronaldo', 'Luka Modrić', 'Karim Benzema', 'Jude Bellingham'] },
+    ]
+  },
+
+  // ============================================================
+  'Sergio Ramos': {
+    name: 'Sergio Ramos', nationality: 'Spanish', flag: '🇪🇸',
+    born: 'Camas, Seville', dob: '1986-03-30', position: 'Defender',
+    career: [
+      { club: 'Sevilla', country: 'Spain', city: 'Seville', flag: '🇪🇸', lat: 37.384, lng: -5.970, from: 2003, to: 2005, apps: 49, goals: 2, assists: 3,
+        funFact: "Became Sevilla's youngest La Liga player at 15. The club record stood for years.",
+        drama: 'Real Madrid paid €27M — then record for a Spanish defender. Sevilla ultras never forgave him.',
+        highlight: 'Youngest-ever Sevilla debutant. The beginning of one of the great careers.',
+        teammates: ['Dario Silva', 'Fernando Sales', 'José Antonio Reyes', 'Javi Navarro'] },
+      { club: 'Real Madrid', country: 'Spain', city: 'Madrid', flag: '🇪🇸', lat: 40.453, lng: -3.689, from: 2005, to: 2021, apps: 671, goals: 101, assists: 56,
+        funFact: '101 goals as a defender — the most by any central defender in European football history.',
+        drama: 'That 93:20 header vs Atlético in UCL Final 2014. One of the most dramatic moments in sport.',
+        highlight: '4 UCL titles. 5 La Ligas. Spain captain. World Cup 2010, Euro 2008 & 2012. The complete legend.',
+        teammates: ['Cristiano Ronaldo', 'Luka Modrić', 'Karim Benzema', 'Iker Casillas'] },
+      { club: 'PSG', country: 'France', city: 'Paris', flag: '🇫🇷', lat: 48.841, lng: 2.253, from: 2021, to: 2023, apps: 54, goals: 2, assists: 4,
+        funFact: 'Plagued by injury at PSG — the body finally catching up after 16 years at the absolute peak.',
+        drama: 'Left PSG in 2023. Returned to Sevilla. The shirt was once burned. They now chanted his name.',
+        highlight: 'Ligue 1 title 2021-22. Leadership in the dressing room never faded.',
+        teammates: ['Neymar', 'Kylian Mbappé', 'Lionel Messi', 'Marquinhos'] },
+      { club: 'Sevilla', country: 'Spain', city: 'Seville', flag: '🇪🇸', lat: 37.384, lng: -5.970, from: 2023, to: 2024, apps: 24, goals: 2, assists: 1,
+        funFact: 'Returned to the club that made him. Sevilla fans — who once burned his shirt — gave him a tearful welcome back.',
+        drama: 'The shirt was burned. The statue will probably follow. Football has a wonderful memory.',
+        highlight: 'Full circle. One of the greatest careers in football history — begun and ended at Sevilla.',
+        teammates: ['Jesús Navas', 'Youssef En-Nesyri', 'Ivan Rakitić', 'Juanlu Sánchez'] },
+    ]
+  },
+
+  // ============================================================
+  'Andrea Pirlo': {
+    name: 'Andrea Pirlo', nationality: 'Italian', flag: '🇮🇹',
+    born: 'Flero, Brescia', dob: '1979-05-19', position: 'Midfielder',
+    career: [
+      { club: 'Brescia', country: 'Italy', city: 'Brescia', flag: '🇮🇹', lat: 45.534, lng: 10.220, from: 1995, to: 2001, apps: 76, goals: 12, assists: 19,
+        funFact: 'Roberto Baggio was his idol and his teammate at Brescia. He studied Baggio every training session.',
+        drama: 'Inter Milan signed him but never used him properly. AC Milan saw what Inter missed.',
+        highlight: 'Serie B promotion. The Italian tradition at its most pure. The launch pad.',
+        teammates: ['Roberto Baggio', 'Andrea Caracciolo', 'Luca Toni', 'Massimo Cellino'] },
+      { club: 'Inter Milan', country: 'Italy', city: 'Milan', flag: '🇮🇹', lat: 45.480, lng: 9.126, from: 2001, to: 2001, apps: 5, goals: 0, assists: 1,
+        funFact: 'Inter used him in five games and decided he was not ready. AC Milan paid €17M and transformed his position.',
+        drama: 'AC Milan moved him from attacking mid to deep-lying regista. The role change made him a generational talent.',
+        highlight: 'Five appearances. Enough to understand he needed a completely different direction.',
+        teammates: ['Ronaldo Nazário', 'Javier Zanetti', 'Christian Vieri', 'Sandro Mazzola'] },
+      { club: 'AC Milan', country: 'Italy', city: 'Milan', flag: '🇮🇹', lat: 45.478, lng: 9.124, from: 2001, to: 2011, apps: 401, goals: 32, assists: 91,
+        funFact: 'Ancelotti moved him from attacking midfielder to deep-lying regista at Milan. The position change made him immortal.',
+        drama: 'Milan let him go on a free at 32. Juventus built a new dynasty around him. Football gave the gift back.',
+        highlight: '2 UCL titles. 2 Serie A titles. World Cup 2006. He redefined the deep playmaker role forever.',
+        teammates: ['Kaká', 'Ronaldinho', 'Zlatan Ibrahimović', 'Gennaro Gattuso'] },
+      { club: 'Juventus', country: 'Italy', city: 'Turin', flag: '🇮🇹', lat: 45.109, lng: 7.641, from: 2011, to: 2015, apps: 164, goals: 22, assists: 56,
+        funFact: 'Won 4 consecutive Scudetti at Juventus in his 30s. The older he got, the more elegant he became.',
+        drama: 'New York City FC offered him the final act. He took it — and became MLS ambassador for the beautiful game.',
+        highlight: 'Juventus dynasty × 4. Still the best passer in Serie A at 36. A legend in every city he touched.',
+        teammates: ['Gianluigi Buffon', 'Paul Pogba', 'Carlos Tevez', 'Leonardo Bonucci'] },
+      { club: 'New York City FC', country: 'USA', city: 'New York', flag: '🇺🇸', lat: 40.757, lng: -73.846, from: 2015, to: 2017, apps: 60, goals: 9, assists: 26,
+        funFact: 'His debut at Yankee Stadium with David Villa alongside him. Pirlo played every pass like a man with all the time in the world — because he had.',
+        drama: 'Returned to Italy to finish his career and immediately became Juventus B manager. Then somehow Juventus head coach.',
+        highlight: 'Ambassador for the game itself. NYCFC most elegant player to date.',
+        teammates: ['David Villa', 'Frank Lampard', 'Mix Diskerud', 'Tommy McNamara'] },
+    ]
+  },
+
+  // ============================================================
+  'Sadio Mané': {
+    name: 'Sadio Mané', nationality: 'Senegalese', flag: '🇸🇳',
+    born: 'Sédhiou, Senegal', dob: '1992-04-10', position: 'Winger',
+    career: [
+      { club: 'Metz', country: 'France', city: 'Metz', flag: '🇫🇷', lat: 49.109, lng: 6.176, from: 2011, to: 2012, apps: 22, goals: 2, assists: 3,
+        funFact: 'Joined Metz from Senegalese football at 19 speaking almost no French. Adapted in months. The hunger was visible from day one.',
+        drama: 'Red Bull Salzburg outbid multiple French clubs. Austria\'s gain.',
+        highlight: 'His European foundation. The first chapter outside Africa.',
+        teammates: ['Ibrahima Baldé', 'Alexandre Oukidja', 'Abou Diallo', 'Lenny Nangis'] },
+      { club: 'RB Salzburg', country: 'Austria', city: 'Salzburg', flag: '🇦🇹', lat: 47.822, lng: 13.049, from: 2012, to: 2014, apps: 87, goals: 45, assists: 23,
+        funFact: 'Scored the fastest hat-trick in Premier League history the season after leaving Salzburg — they released him too early.',
+        drama: 'Southampton bought him for €4M. That would turn into Liverpool for £34M. The ladder climbed fast.',
+        highlight: 'Austrian Bundesliga × 2. Europa League semi-finalist. 45 goals in 87 games.',
+        teammates: ['Alan', 'Jonatan Soriano', 'Marc Janko', 'Kevin Kampl'] },
+      { club: 'Southampton', country: 'England', city: 'Southampton', flag: '🏴', lat: 50.906, lng: -1.391, from: 2014, to: 2016, apps: 75, goals: 25, assists: 14,
+        funFact: 'Scored a hat-trick in 2 minutes 56 seconds vs Aston Villa — the fastest hat-trick in Premier League history. The record still stands.',
+        drama: 'Liverpool paid £34M. Southampton fans heartbroken. Third summer selling a world-class star.',
+        highlight: 'That hat-trick record will stand for years. PL top-6 form. Liverpool came calling.',
+        teammates: ['Graziano Pellè', 'Dusan Tadic', 'Victor Wanyama', 'Ryan Bertrand'] },
+      { club: 'Liverpool', country: 'England', city: 'Liverpool', flag: '🏴', lat: 53.431, lng: -2.961, from: 2016, to: 2022, apps: 269, goals: 120, assists: 48,
+        funFact: 'Won the UCL, PL, FA Cup, League Cup and Club World Cup with Liverpool. The SAS + Salah era will never be forgotten.',
+        drama: 'Left for Bayern Munich to grow as a player and a man. The departure broke Liverpool hearts.',
+        highlight: 'UCL winner 2019. PL winner 2020. African Player of Year × 3 while at Liverpool.',
+        teammates: ['Mohamed Salah', 'Roberto Firmino', 'Virgil van Dijk', 'Alisson'] },
+      { club: 'Bayern Munich', country: 'Germany', city: 'Munich', flag: '🇩🇪', lat: 48.219, lng: 11.625, from: 2022, to: 2023, apps: 38, goals: 12, assists: 8,
+        funFact: '€32M transfer. One difficult season in the Bundesliga. The system did not suit his style the way Klopp had.',
+        drama: 'Bayern sold him to Al Nassr after just one season. Surprising — and painful — exit.',
+        highlight: 'Bundesliga champion 2022-23. Team player to the end, even when it hurt.',
+        teammates: ['Leroy Sané', 'Jamal Musiala', 'Thomas Müller', 'Manuel Neuer'] },
+      { club: 'Al Nassr', country: 'Saudi Arabia', city: 'Riyadh', flag: '🇸🇦', lat: 24.774, lng: 46.738, from: 2023, to: null, apps: 67, goals: 36, assists: 18,
+        funFact: 'Reunited with Cristiano Ronaldo at Al Nassr. Two of the sport\'s greatest wide forwards, playing together in Saudi Arabia. Football is strange and wonderful.',
+        drama: "Africa's greatest winger of his generation, finishing his career in Saudi Arabia. The continent had mixed feelings.",
+        highlight: 'AFCON winner 2022 with Senegal. His legacy at absolute peak.',
+        teammates: ['Cristiano Ronaldo', 'Marcelo Brozović', 'Aymeric Laporte', 'Alex Telles'] },
     ]
   },
 
