@@ -223,12 +223,11 @@
           <div id="game-result-subtitle" class="game-result-subtitle"></div>
           <div id="game-result-career" class="game-result-career"></div>
           <div id="game-result-guesses" class="game-result-guesses"></div>
-          <div id="game-streak-stats" class="game-streak-stats"></div>
           <div class="game-share-box">
             <textarea id="game-share-text" class="game-share-text" readonly rows="5"></textarea>
             <button id="copy-share-btn" class="game-share-copy" onclick="copyGameShare()">Copy Result</button>
           </div>
-          <button id="game-explore-btn" class="game-see-career">
+          <button class="game-see-career" onclick="exitGame(); setTimeout(() => selectPlayer(gameMystery && gameMystery.name), 100)">
             Explore their career →
           </button>
         </div>

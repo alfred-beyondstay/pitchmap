@@ -354,14 +354,3 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   .player-panel { padding: 10px 14px 14px; }
   .game-panel { width: 100%; top: auto; bottom: 0; height: 70vh; border-left: none; border-top: 1px solid var(--border); }
 }
-
-/* ---- STREAK STATS (game result) ---- */
-.game-streak-stats { margin: 4px 0; }
-.streak-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.streak-stat { text-align: center; background: var(--surface); border-radius: 10px; padding: 10px 4px; border: 1px solid var(--border); }
-.streak-stat span { display: block; font-size: 20px; font-weight: 700; color: var(--gold); }
-.streak-stat label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; display: block; }
-
-/* ---- KEYBOARD HINT ---- */
-.kbd-hint { font-size: 10px; color: var(--muted); text-align: center; margin-top: 8px; }
-.kbd-hint kbd { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 10px; font-family: var(--font); }
