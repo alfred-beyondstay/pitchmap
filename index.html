@@ -100,11 +100,13 @@
           <button class="chip" onclick="goToCountry('France')">🇫🇷 Ligue 1</button>
         </div>
       </div>
-      <div style="margin-top:24px">
+      <div style="margin-top:24px;display:flex;flex-direction:column;align-items:center;gap:10px">
         <button class="game-launch-btn" onclick="startDailyGame()">
           🎮 Play Today's Daily Challenge
           <span id="daily-game-hint" style="font-size:11px;opacity:0.7;display:block;margin-top:3px"></span>
         </button>
+        <button class="surprise-btn" onclick="surpriseMe()">🎲 Surprise Me</button>
+        <p class="kbd-hint"><kbd>←</kbd><kbd>→</kbd> navigate career &nbsp;·&nbsp; <kbd>Esc</kbd> back &nbsp;·&nbsp; <kbd>G</kbd> daily game</p>
       </div>
     </div>
 

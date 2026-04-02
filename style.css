@@ -365,3 +365,12 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ---- KEYBOARD HINT ---- */
 .kbd-hint { font-size: 10px; color: var(--muted); text-align: center; margin-top: 8px; }
 .kbd-hint kbd { background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 10px; font-family: var(--font); }
+
+/* ---- SURPRISE ME BUTTON ---- */
+.surprise-btn {
+  background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+  border-radius: 100px; padding: 8px 20px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.surprise-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--surface2); }

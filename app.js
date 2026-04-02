@@ -937,3 +937,12 @@ if (PLAYERS[todayName]) {
     }
   }
 }
+
+// ============================================================
+// SURPRISE ME — random player
+// ============================================================
+function surpriseMe() {
+  const names = Object.keys(PLAYERS);
+  const pick = names[Math.floor(Math.random() * names.length)];
+  selectPlayer(pick);
+}
