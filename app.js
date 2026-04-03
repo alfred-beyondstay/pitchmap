@@ -1,7 +1,6 @@
 // ============================================================
-// PITCHMAP v8 — Seamless Globe Navigation + Daily Wordle Game
-// Improvements: localStorage streak/persistence, one-game-per-day,
-// streak display, bug fixes, keyboard shortcuts, UI polish
+// PITCHMAP v11 — Seamless Globe + Daily Game + UI Polish
+// Auto-tour idle mode, club color accents, improved game UX
 // ============================================================
 
 // ============================================================
@@ -33,7 +32,6 @@ const GameStore = {
     if (!store.results) store.results = {};
     store.results[this.getTodayKey()] = result;
 
-    // Update streaks
     const yesterday = new Date();
     yesterday.setUTCDate(yesterday.getUTCDate() - 1);
     const yKey = yesterday.getUTCFullYear() + '-' + String(yesterday.getUTCMonth() + 1).padStart(2, '0') + '-' + String(yesterday.getUTCDate()).padStart(2, '0');
@@ -78,6 +76,10 @@ let currentClubIndex = 0;
 let currentYear = 2024;
 let popupTimeout = null;
 let flyTimeout = null;
+let autoTourTimeout = null;
+let autoTourPlayerIndex = 0;
+let autoTourClubIndex = 0;
+let autoTourActive = false;
 
 // ---- GAME STATE ----
 let gameActive = false;
@@ -86,7 +88,7 @@ let gameGuesses = [];
 let gameMaxGuesses = 6;
 let gameSolved = false;
 let gameRevealIndex = 0;
-let gamePlayerNameForResult = null; // Safe closure ref for post-game "explore" button
+let gamePlayerNameForResult = null;
 
 // ============================================================
 // DAILY SEED — deterministic player per calendar day
@@ -111,7 +113,7 @@ function initGlobe() {
     .arcsData([]).arcColor('arcColor').arcAltitudeAutoScale(0.4).arcStroke(1.2)
     .arcDashLength(0.6).arcDashGap(0.4).arcDashAnimateTime(1400)
     .labelsData([]).labelLat('lat').labelLng('lng').labelText('text')
-    .labelColor(() => '#00ff88').labelSize(1.0).labelDotRadius(0.3).labelResolution(2);
+    .labelColor(d => d.labelColor || '#00ff88').labelSize(1.0).labelDotRadius(0.3).labelResolution(2);
 
   globe.controls().autoRotate = true;
   globe.controls().autoRotateSpeed = 0.3;
@@ -122,6 +124,59 @@ function initGlobe() {
     globe.width(window.innerWidth);
     globe.height(window.innerHeight);
   });
+
+  // Ambient auto-tour starts after brief delay
+  setTimeout(startAutoTour, 2200);
+}
+
+// ============================================================
+// AUTO TOUR — ambient globe journey while idle on landing
+// ============================================================
+function startAutoTour() {
+  if (activeMode !== 'globe') return;
+  autoTourActive = true;
+  const names = Object.keys(PLAYERS);
+  autoTourPlayerIndex = Math.floor(Math.random() * names.length);
+  autoTourClubIndex = 0;
+  runAutoTourStep();
+}
+
+function runAutoTourStep() {
+  if (!autoTourActive || activeMode !== 'globe') return;
+  const names = Object.keys(PLAYERS);
+  const player = PLAYERS[names[autoTourPlayerIndex % names.length]];
+  if (!player) { autoTourPlayerIndex++; scheduleAutoTour(4200); return; }
+
+  const clubIdx = autoTourClubIndex % player.career.length;
+  const club = player.career[clubIdx];
+
+  const allPoints = player.career.map((c, i) => ({
+    lat: c.lat, lng: c.lng,
+    color: i <= clubIdx ? 'rgba(0,255,136,0.15)' : 'rgba(0,255,136,0.05)',
+    altitude: i === clubIdx ? 0.025 : 0.008,
+    radius: i === clubIdx ? 0.32 : 0.12
+  }));
+  globe.pointsData(allPoints);
+  globe.labelsData([{ lat: club.lat + 1.1, lng: club.lng, text: club.city, labelColor: 'rgba(0,255,136,0.28)' }]);
+
+  globe.pointOfView({ lat: club.lat, lng: club.lng, altitude: 1.7 }, 3600);
+
+  autoTourClubIndex++;
+  if (autoTourClubIndex >= player.career.length) {
+    autoTourClubIndex = 0;
+    autoTourPlayerIndex++;
+  }
+  scheduleAutoTour(5200);
+}
+
+function scheduleAutoTour(ms) {
+  clearTimeout(autoTourTimeout);
+  autoTourTimeout = setTimeout(runAutoTourStep, ms || 5000);
+}
+
+function stopAutoTour() {
+  autoTourActive = false;
+  clearTimeout(autoTourTimeout);
 }
 
 // ============================================================
@@ -184,6 +239,7 @@ const COUNTRY_CENTERS = {
 // MODE: COUNTRY
 // ============================================================
 function goToCountry(country) {
+  stopAutoTour();
   const c = COUNTRY_CENTERS[country] || { lat: 50, lng: 0, zoom: 6 };
   currentCountry = country;
   flyTo(c.lat, c.lng, 0.5, 1200, () => {
@@ -213,6 +269,8 @@ function exitCountryMode() {
   globe.pointsData([]);
   globe.arcsData([]);
   globe.labelsData([]);
+  document.getElementById('landing').classList.remove('hidden');
+  setTimeout(startAutoTour, 1000);
 }
 
 function placeClubMarkers(country) {
@@ -254,6 +312,7 @@ function renderClubView(club) {
   document.getElementById('teammates-panel').classList.add('hidden');
 
   document.getElementById('cv-name').textContent = club.name;
+  document.getElementById('cv-name').style.color = club.color || 'var(--accent)';
   document.getElementById('cv-meta').textContent = club.city + ', ' + club.country + ' · Founded ' + club.founded;
   document.getElementById('cv-stadium').textContent = club.stadiumName + ' (cap. ' + club.capacity.toLocaleString() + ')';
   document.getElementById('cv-history').textContent = club.history;
@@ -302,6 +361,18 @@ function closeClubView() {
 }
 
 // ============================================================
+// CLUB COLOR HELPER
+// ============================================================
+function getClubColor(clubName) {
+  if (CLUBS[clubName]) return CLUBS[clubName].color;
+  for (const country of Object.values(COUNTRY_CLUBS)) {
+    const found = country.find(c => c.name === clubName);
+    if (found) return found.color;
+  }
+  return null;
+}
+
+// ============================================================
 // MODE: PLAYER — seamless globe journey
 // ============================================================
 const searchInput = document.getElementById('search');
@@ -332,6 +403,7 @@ function selectPlayer(name) {
   }
   const player = PLAYERS[name];
   if (!player) return;
+  stopAutoTour();
   currentPlayer = player;
   currentClubIndex = 0;
   activeMode = 'player';
@@ -393,8 +465,11 @@ function goToClub(index) {
   if (index < 0 || index >= career.length) return;
   currentClubIndex = index;
   const club = career[index];
+  const clubColor = getClubColor(club.club) || '#00ff88';
 
-  document.querySelectorAll('.timeline-item').forEach((el, i) => el.classList.toggle('active', i === index));
+  document.querySelectorAll('.timeline-item').forEach((el, i) => {
+    el.classList.toggle('active', i === index);
+  });
   document.getElementById('btn-prev').disabled = index === 0;
   document.getElementById('btn-next').disabled = index === career.length - 1;
   document.getElementById('nav-label').textContent = (index + 1) + ' / ' + career.length;
@@ -404,7 +479,7 @@ function goToClub(index) {
     globe.arcsData([{
       startLat: club.lat, startLng: club.lng,
       endLat: next.lat, endLng: next.lng,
-      arcColor: ['#00ff88', '#00c8ff']
+      arcColor: [clubColor, '#00c8ff']
     }]);
   } else {
     globe.arcsData([]);
@@ -412,31 +487,47 @@ function goToClub(index) {
 
   globe.pointsData(career.map((c, i) => ({
     lat: c.lat, lng: c.lng,
-    color: i === index ? '#ffffff' : (i < index ? 'rgba(0,255,136,0.35)' : '#00ff88'),
-    altitude: i === index ? 0.07 : 0.012,
-    radius: i === index ? 0.75 : 0.28,
+    color: i === index ? clubColor : (i < index ? 'rgba(0,255,136,0.28)' : '#00ff88'),
+    altitude: i === index ? 0.09 : 0.012,
+    radius: i === index ? 0.85 : 0.28,
     clubIndex: i
   })));
 
-  globe.labelsData([{ lat: club.lat + 0.8, lng: club.lng, text: club.city + ', ' + club.country }]);
+  globe.labelsData([{
+    lat: club.lat + 0.8, lng: club.lng,
+    text: club.city + ', ' + club.country,
+    labelColor: clubColor
+  }]);
 
   flyTo(club.lat, club.lng, 0.5, 1800);
 
   clearTimeout(popupTimeout);
   popupTimeout = setTimeout(() => {
-    showClubCard(club, index);
+    showClubCard(club, index, clubColor);
     showTeammates(club);
   }, 1200);
 }
 
-function showClubCard(club, index) {
+function showClubCard(club, index, clubColor) {
+  const color = clubColor || '#00ff88';
   document.getElementById('cc-flag').textContent = club.flag;
   document.getElementById('cc-club').textContent = club.club;
   document.getElementById('cc-country').textContent = club.city + ', ' + club.country + ' · ' + club.from + '–' + (club.to || 'present');
   document.getElementById('cc-apps').textContent = club.apps;
   document.getElementById('cc-goals').textContent = club.goals;
   document.getElementById('cc-assists').textContent = club.assists;
+
   const card = document.getElementById('club-card');
+  card.style.borderColor = color + '40';
+  card.style.boxShadow = '0 8px 40px rgba(0,0,0,0.7), 0 0 24px ' + color + '18';
+
+  const deepen = card.querySelector('.cc-deepen');
+  deepen.style.borderColor = color + '50';
+  deepen.style.color = color;
+  deepen.style.background = color + '12';
+
+  card.querySelectorAll('.cc-stat span').forEach(s => s.style.color = color);
+
   card.dataset.index = index;
   card.classList.remove('hidden');
 }
@@ -470,6 +561,11 @@ function openDeepDive() {
   document.getElementById('dd-funfact').textContent = club.funFact || '—';
   document.getElementById('dd-drama').textContent = club.drama || '—';
   document.getElementById('dd-highlight').textContent = club.highlight || '—';
+
+  // Color accent in deep dive
+  const color = getClubColor(club.club) || 'var(--accent)';
+  document.getElementById('dd-title').style.color = color;
+
   document.getElementById('deep-dive').classList.remove('hidden');
 }
 
@@ -529,6 +625,7 @@ function closeNationalView() {
 // DAILY GAME — Wordle-style "Guess the Player"
 // ============================================================
 function startDailyGame() {
+  stopAutoTour();
   const name = getDailyPlayerName();
   const todayResult = GameStore.getTodayResult();
 
@@ -537,7 +634,7 @@ function startDailyGame() {
   gameGuesses = [];
   gameSolved = false;
   gameRevealIndex = 0;
-  gameActive = !todayResult; // Inactive if already played today
+  gameActive = !todayResult;
 
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('player-panel').classList.add('hidden');
@@ -554,7 +651,6 @@ function startDailyGame() {
   }
 
   if (todayResult) {
-    // Already played today — show result directly
     gameGuesses = todayResult.guesses;
     gameSolved = todayResult.won;
     document.getElementById('game-guess-area').classList.add('hidden');
@@ -582,8 +678,8 @@ function renderMysteryGlobe() {
   globe.pointsData(visible.map((c, i) => ({
     lat: c.lat, lng: c.lng,
     color: '#ffd700',
-    altitude: 0.04,
-    radius: 0.55,
+    altitude: 0.045,
+    radius: 0.6,
     clubIndex: i
   })));
 
@@ -597,14 +693,15 @@ function renderMysteryGlobe() {
   }
   globe.arcsData(arcs);
 
-  // Early guesses: country only. Later: add city
+  // Country only for first 2 guesses, then add city
   globe.labelsData(visible.map(c => ({
-    lat: c.lat + 0.8, lng: c.lng,
-    text: gameRevealIndex < 2 ? c.country : c.city + ', ' + c.country
+    lat: c.lat + 1.0, lng: c.lng,
+    text: gameRevealIndex < 2 ? c.country : c.city + ', ' + c.country,
+    labelColor: '#ffd70088'
   })));
 
   const last = visible[visible.length - 1];
-  flyTo(last.lat, last.lng, 0.7, 1400);
+  flyTo(last.lat, last.lng, 0.75, 1400);
 }
 
 function renderFullRevealGlobe(won) {
@@ -613,7 +710,7 @@ function renderFullRevealGlobe(won) {
   globe.pointsData(mystery.career.map(c => ({
     lat: c.lat, lng: c.lng,
     color: won ? '#00ff88' : '#ff4444',
-    altitude: 0.05, radius: 0.55
+    altitude: 0.06, radius: 0.6
   })));
   const arcs = mystery.career.slice(0, -1).map((c, i) => ({
     startLat: c.lat, startLng: c.lng,
@@ -621,8 +718,12 @@ function renderFullRevealGlobe(won) {
     arcColor: won ? ['#00ff88', '#00c8ff'] : ['#ff4444', '#ff8888']
   }));
   globe.arcsData(arcs);
-  globe.labelsData(mystery.career.map(c => ({ lat: c.lat + 0.8, lng: c.lng, text: c.club })));
-  flyTo(mystery.career[0].lat, mystery.career[0].lng, 0.8, 1600);
+  globe.labelsData(mystery.career.map(c => ({
+    lat: c.lat + 0.8, lng: c.lng,
+    text: c.club,
+    labelColor: won ? '#00ff88cc' : '#ff4444cc'
+  })));
+  flyTo(mystery.career[0].lat, mystery.career[0].lng, 0.85, 1600);
 }
 
 function updateGameHint() {
@@ -694,15 +795,25 @@ function submitGuess(name) {
   const list = document.getElementById('game-guesses-list');
   const item = document.createElement('div');
   item.className = 'game-guess-item ' + (correct ? 'correct' : 'wrong');
+
+  // Nationality match hint — helpful clue without spoiling
+  const natMatch = !correct && player.nationality === gameMystery.nationality;
+  const posMatch = !correct && player.position === gameMystery.position;
+  let hints = [];
+  if (natMatch) hints.push('same nation ✓');
+  if (posMatch) hints.push('same position ✓');
+
   item.innerHTML = player.flag + ' <strong>' + name + '</strong>' +
-    ' <span style="font-size:10px;color:var(--muted)">' + player.nationality + '</span>' +
+    ' <span class="guess-hint">' + player.nationality +
+    (hints.length ? ' · <em class="hint-match">' + hints.join(', ') + '</em>' : '') +
+    '</span>' +
     (correct ? ' ✅' : ' ❌');
   list.insertBefore(item, list.firstChild);
 
   if (correct) {
     gameSolved = true;
     gameActive = false;
-    document.getElementById('game-feedback').textContent = '🎉 Correct!';
+    document.getElementById('game-feedback').textContent = '🎉 Brilliant!';
     setTimeout(() => revealAnswer(true), 900);
   } else if (gameGuesses.length >= gameMaxGuesses) {
     gameActive = false;
@@ -714,7 +825,9 @@ function submitGuess(name) {
       renderMysteryGlobe();
     }
     updateGameHint();
-    const hint = gameRevealIndex < 2 ? 'Another country dot revealed.' : 'City + country now shown.';
+    const hint = gameRevealIndex < 2
+      ? 'Another club location revealed.'
+      : 'City + country now showing.';
     document.getElementById('game-feedback').textContent = '❌ Not quite — ' + hint;
     document.getElementById('game-input').focus();
   }
@@ -738,7 +851,7 @@ function restoreResult(todayResult) {
 
 function buildResultUI(mystery, won, store) {
   const flags = mystery.career.map(c => c.flag).join('');
-  const guessRow = gameGuesses.map(g => g === mystery.name ? '🟩' : '🟥').join('');
+  const guessEmojis = gameGuesses.map(g => g === mystery.name ? '🟩' : '🟥').join('');
   const empties = '⬛'.repeat(Math.max(0, gameMaxGuesses - gameGuesses.length));
 
   document.getElementById('game-result-title').textContent = won
@@ -749,10 +862,9 @@ function buildResultUI(mystery, won, store) {
   document.getElementById('game-result-career').textContent = flags;
   document.getElementById('game-result-guesses').textContent =
     won
-      ? 'Solved in ' + gameGuesses.length + '/' + gameMaxGuesses + ' guess' + (gameGuesses.length !== 1 ? 'es' : '')
-      : 'Better luck tomorrow — ' + gameGuesses.length + '/' + gameMaxGuesses + ' used';
+      ? '⚽ Solved in ' + gameGuesses.length + '/' + gameMaxGuesses + ' guess' + (gameGuesses.length !== 1 ? 'es' : '')
+      : '💀 Better luck tomorrow — ' + gameGuesses.length + '/' + gameMaxGuesses + ' used';
 
-  // Streak stats
   const streakEl = document.getElementById('game-streak-stats');
   if (streakEl) {
     const pct = store.totalPlayed ? Math.round(store.totalWins / store.totalPlayed * 100) : 0;
@@ -760,7 +872,7 @@ function buildResultUI(mystery, won, store) {
       '<div class="streak-grid">' +
       '<div class="streak-stat"><span>' + store.totalPlayed + '</span><label>Played</label></div>' +
       '<div class="streak-stat"><span>' + pct + '%</span><label>Win %</label></div>' +
-      '<div class="streak-stat"><span>' + store.currentStreak + '</span><label>Streak</label></div>' +
+      '<div class="streak-stat"><span>' + store.currentStreak + '</span><label>🔥 Streak</label></div>' +
       '<div class="streak-stat"><span>' + store.maxStreak + '</span><label>Best</label></div>' +
       '</div>';
   }
@@ -770,12 +882,11 @@ function buildResultUI(mystery, won, store) {
   const shareText =
     '⚽ Pitchmap Daily — ' + dateStr + '\n' +
     (won ? '✅ ' + gameGuesses.length + '/' + gameMaxGuesses : '❌ ' + gameMaxGuesses + '/' + gameMaxGuesses) + '\n' +
-    guessRow + empties + '\n' +
+    guessEmojis + empties + '\n' +
     flags + '\n' +
-    'pitchmap.vercel.app';
+    'alfred-beyondstay.github.io/pitchmap';
   document.getElementById('game-share-text').value = shareText;
 
-  // Safe reference for explore button — stored in module-level var
   gamePlayerNameForResult = mystery.name;
   const exploreBtn = document.getElementById('game-explore-btn');
   if (exploreBtn) {
@@ -808,6 +919,7 @@ function exitGame() {
   globe.labelsData([]);
   globe.controls().autoRotate = true;
   activeMode = 'globe';
+  setTimeout(startAutoTour, 1200);
 }
 
 // ============================================================
@@ -833,9 +945,11 @@ function buildTimeline(player) {
     const item = document.createElement('div');
     item.className = 'timeline-item' + (i === 0 ? ' active' : '');
     item.style.animationDelay = (i * 55) + 'ms';
+
+    const clubColor = getClubColor(club.club) || 'var(--accent)';
     item.innerHTML =
       '<span class="ti-flag">' + club.flag + '</span>' +
-      '<div class="ti-dot"></div>' +
+      '<div class="ti-dot" style="background:' + clubColor + '"></div>' +
       '<span class="ti-club">' + club.club + '</span>' +
       '<span class="ti-years">' + club.from + '–' + (club.to || 'now') + '</span>';
     item.onclick = () => goToClub(i);
@@ -857,7 +971,6 @@ document.getElementById('btn-next').addEventListener('click', () => goToClub(cur
 document.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-  // Player mode navigation
   if (activeMode === 'player') {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
       e.preventDefault();
@@ -882,12 +995,12 @@ document.addEventListener('keydown', e => {
       activeMode = 'globe';
       document.getElementById('landing').classList.remove('hidden');
       document.getElementById('share-btn').style.display = 'none';
+      setTimeout(startAutoTour, 1200);
     }
     if (activeMode === 'country') exitCountryMode();
     if (!document.getElementById('game-panel').classList.contains('hidden')) exitGame();
   }
 
-  // 'g' opens daily game
   if (e.key === 'g' && activeMode === 'globe') startDailyGame();
 });
 
@@ -899,7 +1012,7 @@ document.getElementById('share-btn').addEventListener('click', () => {
     p.career.map(c => c.flag + ' ' + c.club + ' (' + c.from + '–' + (c.to || 'now') + ')').join('\n') + '\n' +
     p.career.length + ' clubs · ' + p.career.reduce((s, c) => s + c.goals, 0) + ' goals · ' +
     p.career.reduce((s, c) => s + c.apps, 0) + ' apps\n' +
-    'pitchmap.vercel.app';
+    'alfred-beyondstay.github.io/pitchmap';
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
       const b = document.getElementById('share-btn');

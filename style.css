@@ -374,3 +374,22 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 .surprise-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--surface2); }
+
+/* ---- V11: GUESS HINT MATCH ---- */
+.guess-hint { font-size: 10px; color: var(--muted); margin-left: 4px; }
+.hint-match { color: #7fffb2; font-style: normal; font-weight: 600; }
+
+/* ---- V11: LANDING HEADING GRADIENT ---- */
+.landing h2 {
+  background: linear-gradient(135deg, #ffffff 0%, #00ff88 50%, #00c8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ---- V11: GAME INPUT FOCUS GLOW ---- */
+#game-input:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255,215,0,0.12); }
+
+/* ---- V11: IMPROVED GAME GUESS ITEM ---- */
+.game-guess-item { line-height: 1.5; }
+.game-guesses-list { max-height: 220px; }
